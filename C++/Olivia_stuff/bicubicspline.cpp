@@ -86,27 +86,23 @@ BicubicSpline::BicubicSpline(std::vector<double>Xs, std::vector<double>Ys, std::
     CubicSpline spline_bottom(xs, zs[0], d4x2y2s_corners[0], d4x2y2s_corners[1]);
     CubicSpline spline_top(xs, zs[n-1], d4x2y2s_corners[3], d4x2y2s_corners[2]);
 
-    std::cout<<"1"<<std::endl;
     // get spline coefficients
     // Change these to getters
     std::vector<std::vector<double>> S_bottom = spline_bottom.GetS();
     std::vector<std::vector<double>> S_top = spline_top.GetS();
 
-    std::cout<<"2"<<std::endl;
     // calculate and store analytical x derivatives at boundary knots
     // the rest of the terms of the derivative are zero at the knots
     // due to (x - t) terms (see CubicSpline code)
-    std::cout<<"3"<<std::endl;
     for (  int i = 0; i<zs_xyy_bottom.size()-1; i++){
         zs_xyy_bottom[i] = S_bottom[i][1];
     }
     zs_xyy_bottom[zs_xyy_bottom.size()-1] = S_bottom[S_bottom.size()-1][1] + 2*S_bottom[S_bottom.size()-1][2]*(xs[n-1] - xs[n-2]) + 3* S_bottom[S_bottom.size()-1][3]*std::pow((xs[n-1] - xs[n-2]),2);
-    std::cout<<"4"<<std::endl;
     for (  int i = 0; i<zs_xyy_top.size()-1; i++ ){
         zs_xyy_top[i] = S_top[i][1];
     }
     zs_xyy_top[zs_xyy_top.size()-1] = S_top[S_top.size()-1][1] + 2* S_top[S_top.size()-1][2]*(xs[n-1] - xs[n-2]) + 3*S_top[S_top.size()-1][3]*std::pow((xs[n-1] - xs[n-2]),2);
-    std::cout<<"5"<<std::endl;
+    
     // loop over data rows
     for (  int i = 0; i<n; i++ ){
         
@@ -118,14 +114,11 @@ BicubicSpline::BicubicSpline(std::vector<double>Xs, std::vector<double>Ys, std::
 
         // calculate and store analytical x derivatives 
         // at knots along the ith row
-        std::cout<<"1"<<std::endl; 
         for (  int j = 0; j<zs_x[i].size()-1; j++ ){
             zs_x[i][j] = S_x[j][1];
         }
-        std::cout<<"1"<<std::endl; 
         zs_x[i][zs_x[i].size()-1] = S_x[S_x.size()-1][1] + 2*S_x[S_x.size()-1][2]*(xs[n-1] - xs[n-2]) + 3*S_x[S_x.size()-1][3]*std::pow((xs[n-1] - xs[n-2]),2);
     }
-    std::cout<<"6"<<std::endl;
     // loop over data columns
     for (  int i = 0; i < m; i++ ){
         // construct spline along jth column using the calculated 
@@ -350,8 +343,8 @@ double BicubicSpline::evaluateSpline( double X, double Y ){
     // indices given are those of the knot values before which each
     // input value should be slotted in so need to be shifted back by one
     int ixs,iys;
-    ixs = std::upper_bound(xs.begin(), xs.end(), x) - xs.begin();
-    iys = std::upper_bound(ys.begin(), ys.end(), y) - ys.begin();
+    ixs = std::upper_bound(xs.begin(), xs.end(), x) - xs.begin() - 1;
+    iys = std::upper_bound(ys.begin(), ys.end(), y) - ys.begin() - 1;
     // if final input value equal to (or greater than) the final knot 
     // value, rightmost value evaluates to final index of knot array + 1 
     // so it needs to be shifted back by one more
@@ -423,8 +416,8 @@ std::vector<std::vector<double>> BicubicSpline::evaluateSpline( std::vector<doub
     std::vector<double> ixs(n);
     std::vector<double> iys(m);
     for ( int i=0; i<n; i++ ){
-        ixs[i] = std::upper_bound(xs.begin(), xs.end(), x[i]) - xs.begin();
-        iys[i] = std::upper_bound(ys.begin(), ys.end(), x[i]) - ys.begin();
+        ixs[i] = std::upper_bound(xs.begin(), xs.end(), x[i]) - xs.begin() - 1;
+        iys[i] = std::upper_bound(ys.begin(), ys.end(), x[i]) - ys.begin() - 1;
     }
     // if final input value equal to (or greater than) the final knot 
     // value, rightmost value evaluates to final index of knot array + 1 
