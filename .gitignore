@@ -71,6 +71,11 @@ dataset*/
 # Directories #
 ###############
 Python/venv
+eigen-3.4.0
+LHAPDF-6.5.4
+LHAPDF
+.vscode
+
 
 # Images #
 ##################
@@ -82,3 +87,7 @@ Python/venv
 ##################
 *.out
 test_*
+
+# Scripts #
+##################
+setup.sh
