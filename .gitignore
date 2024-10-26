@@ -71,3 +71,14 @@ dataset*/
 # Directories #
 ###############
 Python/venv
+
+# Images #
+##################
+*.pdg
+*.jpeg
+*.png
+
+# Compiled code #
+##################
+*.out
+test_*
