@@ -134,7 +134,8 @@ class BicubicSpline:
         ## construct splines along boundary rows
         spline_bottom = CubicSpline(self.xs, self.zs[0], d2t2_start=self.d4x2y2s_corners[0], d2t2_end=self.d4x2y2s_corners[1])
         spline_top = CubicSpline(self.xs, self.zs[-1], d2t2_start=self.d4x2y2s_corners[3], d2t2_end=self.d4x2y2s_corners[2])
-
+        
+        
         if plot1d:
             
             if verbose:
@@ -155,6 +156,11 @@ class BicubicSpline:
         zs_xyy_top[:-1] = S_top[:, 1]
         zs_xyy_top[-1] = S_top[-1, 1] + 2 * S_top[-1, 2] * (self.xs[-1] - self.xs[-2]) + 3 * S_top[-1, 3] * (self.xs[-1] - self.xs[-2])**2
 
+        print(f"\n\n\n\n\n")
+        print(zs_xyy_bottom)
+        print(f"\n\n\n\n\n")
+        print(zs_xyy_top)
+        print(f"\n\n\n\n\n")
         ## loop over data rows
         for j in range(self.n):
             
