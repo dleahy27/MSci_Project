@@ -1,5 +1,7 @@
 #include "../headers/funcs.h"
 
+// random functions needed for testing
+
 inline constexpr double power(double base, int exponent) {
     if (exponent == 0) {
         return 1;
@@ -70,7 +72,7 @@ std::vector<std::vector<double>> funcs::pdfLike(const std::vector<double>& x, co
     
     for (  int i=0; i<n; i++ ){
         for (  int j=0; j<m; j++  ){
-            z[i][j] = ( (std::pow(x[j], -3) + std::pow(1-x[j],5) -1)* std::log10(y[i])) ;
+            z[i][j] = ( (std::pow(10, -3*x[j]) + std::pow(1-std::pow(10,x[j]),5) -1) * y[i] ) ;
         }
     }
     
@@ -239,53 +241,51 @@ Derivatives funcs::deriv_trig(const std::vector<double>& x, const std::vector<do
     return ds;
 }
 
-std::vector<double> funcs::d1dx_pdfLike(const double x, const std::vector<double>& y){
-    std::vector<double> sol(y.size());
-
-    double numerator_constant = -5*power(-1 + x, 4) - (3 / power(x, 4));
-    double log_10 = std::log(10);  // Precompute log(10) for efficiency
-
-    for (int i = 0; i<y.size(); i++) {
-        double numerator = numerator_constant * std::log(y[i]); 
-        sol[i] = (numerator / log_10); 
+std::vector<std::vector<double>> funcs::d1dx_pdfLike(const std::vector<double>& x, const std::vector<double>& y){
+    std::vector<std::vector<double>> sol(y.size(), std::vector<double>(x.size()));
+    for (int i = 0; i<x.size(); i++) {
+        for (int j = 0; j<y.size(); j++){
+            sol[j][i] = (-5*power(1 - std::pow(10,x[i]), 4) - 3*std::pow(10,-4*x[i]))*y[j];
+        }
     }
+
+    // Final expression
     return sol;
 }
 
-std::vector<double> funcs::d1dy_pdfLike(const std::vector<double>& X, const double y){
-    std::vector<double> sol(X.size());
+std::vector<std::vector<double>> funcs::d1dy_pdfLike(const std::vector<double>& x, const std::vector<double>& y){
+    std::vector<std::vector<double>> sol(y.size(), std::vector<double>(x.size()));
 
-    double denominator = y * std::log(10);
-
-    for (int i = 0; i<X.size(); i++) {
-        double numerator = -1 + power(1 - X[i], 5) + ( 1 / power(X[i], 3));
-        sol[i] = (numerator / denominator);
+    for (int i = 0; i<x.size(); i++) {
+        for (int j = 0; j<y.size(); j++){
+            sol[j][i] = (1 - std::pow(10,3*x[i]) + std::pow(10,3*x[i])*std::pow((1 - std::pow(10,x[i])), 5)) / (power(std::pow(10,x[i]),3)*std::pow(10,y[j])*std::log(10));
+        }
     }
+
     return sol; 
 }
 
-std::vector<double> funcs::d2dx2_pdfLike(const double x, const std::vector<double>& y){
-    std::vector<double> sol(y.size());
+std::vector<std::vector<double>> funcs::d2dx2_pdfLike(const std::vector<double>& x, const std::vector<double>& y){
+    std::vector<std::vector<double>> sol(y.size(), std::vector<double>(x.size()));
 
-    double numerator_constant = -20 * power(-1 + x, 3) + 12 / power(x, 5);
-    double log_10 = std::log(10);  // Precompute log(10) for efficiency
-
-    for (int i = 0; i<y.size(); i++) {
-        double numerator = numerator_constant * std::log(y[i]); 
-        sol[i] = (numerator / log_10); 
+    for (int i = 0; i<x.size(); i++) {
+        for (int j = 0; j<y.size(); j++){
+            sol[j][i] = (20*power( 1 - std::pow(10,x[i]), 3) + 12*std::pow(10,-5*x[i]))*y[j];
+        }
     }
-    return sol;
+
+    return sol; 
 }
 
-std::vector<double> funcs::d2dy2_pdfLike(const std::vector<double>& X, const double y){
-    std::vector<double> sol(X.size());
+std::vector<std::vector<double>> funcs::d2dy2_pdfLike(const std::vector<double>& x, const std::vector<double>& y){
+    std::vector<std::vector<double>> sol(y.size(), std::vector<double>(x.size()));
 
-    double denominator = power(y, 2) * std::log(10);
-
-    for (int i = 0; i<X.size(); i++) {
-        double numerator = -(-1 + power(1 - X[i], 5) + 1 / power(X[i], 3));
-        sol[i] = (numerator / denominator);
+    for (int i = 0; i<x.size(); i++) {
+        for (int j = 0; j<y.size(); j++){
+            sol[j][i] = -(1 - std::pow(10,3*x[i]) + std::pow(10,3*x[i])*std::pow((1 - std::pow(10,x[i])), 5)) / (power(std::pow(10,x[i]),3)*power(std::pow(10,y[j]),2));
+        }
     }
+
     return sol; 
 }
 
@@ -298,10 +298,10 @@ std::vector<double> funcs::d4dx2dy2_pdfLike(const std::vector<double>& X, const 
     // calculate d4dx2dy2 in loop
     for ( int i=0; i<2; i++ ){
         for ( int j=0; j<2; j++ ){
-        double numerator = 20 * power(-1 + X[i], 3) - 12 / power(X[i], 5);
-        double denominator = power(Y[j], 2) * log_10;
+            double numerator = 20 * power(1 - std::pow(10,X[i]), 3) + 12*std::pow(10,-5*X[i]);
+            double denominator = std::pow(10, 2*Y[j]) * log_10;
 
-        temp[j + 2*i] = (numerator/denominator);
+            temp[j + 2*i] = -(numerator/denominator);
         }
     }
     // rearrange to bicubic format (counter-clockwise: [0,0] [1,0] [1,1] [0,1])
@@ -314,16 +314,32 @@ std::vector<double> funcs::d4dx2dy2_pdfLike(const std::vector<double>& X, const 
 }
 
 Derivatives funcs::deriv_pdfLike(const std::vector<double>& x, const std::vector<double>& y){
+    int m,n;
     Derivatives ds;
+    std::vector<std::vector<double>> temp;
+    
+    m = x.size();
+    n = y.size();
+    temp = d2dx2_pdfLike(x,y);
+    ds.d2x2s_left.reserve(n);
+    ds.d2x2s_right.reserve(n);
+    ds.d2y2s_bottom.reserve(m);
+    ds.d2y2s_top.reserve(m);
+    ds.d4x2y2s_corners.reserve(4);
 
-    int m = x.size()-1;
-    int n = y.size()-1;
+    for (int i = 0; i<n; i++){
+        ds.d2x2s_left.push_back(temp[i][0]);
+        ds.d2x2s_right.push_back(temp[i][m-1]);
+    }
 
-    ds.d2x2s_left = d2dx2_pdfLike(x[0], y);
-    ds.d2x2s_right = d2dx2_pdfLike(x[m], y);
-    ds.d2y2s_bottom = d2dy2_pdfLike(x, y[0]);
-    ds.d2y2s_top = d2dy2_pdfLike(x, y[n]);
-    ds.d4x2y2s_corners = d4dx2dy2_pdfLike(std::vector<double> {x[0],x[m]},std::vector<double> {y[0],y[n]});
+    temp = d2dy2_pdfLike(x,y);
+
+    for (int i = 0; i<m; i++){
+        ds.d2y2s_bottom.push_back(temp[0][i]);
+        ds.d2y2s_top.push_back(temp[n-1][i]);
+    }
+
+    ds.d4x2y2s_corners = d4dx2dy2_pdfLike(std::vector<double> {x[0],x[m-1]},std::vector<double> {y[0],y[n-1]});
 
     return ds;
 }
@@ -371,22 +387,17 @@ void funcs::outputPdfDerivatives( const std::vector<double>& x, const std::vecto
     
     std::ofstream myfile;
     myfile.open("../outputs/"+filename);
-    myfile << "d1x,d1y,d2x,d2y"<<std::endl;
+    myfile << "x,y,d1x,d1y,d2x,d2y"<<std::endl;
 
-    for ( int i = 0; i<m; i++ ){
-        d1x_temp[i] = d1dx_pdfLike(x[i],y);
-        d2x_temp[i] = d2dx2_pdfLike(x[i],y);
-    }
+    d1x_temp = d1dx_pdfLike(x,y);
+    d2x_temp = d2dx2_pdfLike(x,y);
 
-    for ( int j = 0; j<n; j++ ){
-        d1y_temp[j] = d1dy_pdfLike(x,y[j]);
-        d2y_temp[j] = d2dy2_pdfLike(x,y[j]);
-        
-    }
+    d1y_temp = d1dy_pdfLike(x,y);
+    d2y_temp = d2dy2_pdfLike(x,y);
 
     for( int i = 0; i<n; i++ ){
         for( int j = 0; j<m; j++ ){
-            myfile<<d1x_temp[j][i]<<","<<d1y_temp[i][j]<<","<<d2x_temp[j][i]<<","<<d2y_temp[i][j]<<std::endl;
+            myfile<<x[j]<<","<<y[i]<<","<<d1x_temp[i][j]<<","<<d1y_temp[i][j]<<","<<d2x_temp[i][j]<<","<<d2y_temp[i][j]<<std::endl;
         }
     }
     myfile.close();

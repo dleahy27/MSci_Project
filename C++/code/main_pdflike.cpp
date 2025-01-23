@@ -2,16 +2,18 @@
 #include <iostream>
 #include <fstream>
 #include "../headers/bicubicspline.h"
-#include "../headers/finitederivatives.h"
+#include "../headers/boundaryderivatives.h"
 #include "../headers/funcs.h"
+#include "../headers/sample.h"
 #include "../headers/derivatives.h"
 
 using namespace funcs;
+using namespace sample;
 
 int main(int argc, char* argv[]){
     // Initialisations
-    int x_num = 251;
-    int y_num = 276;
+    int x_num = 51;
+    int y_num = 51;
     double x_max = -0.001;
     double x_min = -5;
     double y_max = 8;
@@ -19,8 +21,8 @@ int main(int argc, char* argv[]){
     std::vector<double> x,y;
 
     // fill grid knot arrays i.e. linspace
-    x = logspace(x_min,x_max,x_num);
-    y = logspace(y_min,y_max,y_num);
+    x = linspace(x_min,x_max,x_num);
+    y = linspace(y_min,y_max,y_num);
     
     // scalar field values
     std::vector<std::vector<double>> z = pdfLike(x,y);
@@ -29,7 +31,7 @@ int main(int argc, char* argv[]){
 
     // numerical derivatives
     Derivatives ds_num;
-    FiniteDerivatives ds_num_temp(x,y,z);
+    BoundaryDerivatives ds_num_temp(x,y,z);
     ds_num = ds_num_temp.boundary_derivatives;
 
     // initialisation of class test both with derivaties and without
@@ -40,7 +42,7 @@ int main(int argc, char* argv[]){
 
     // array of values test
     // initialisations
-    int y_n = 151;
+    int y_n = 101;
     int x_n = 101;
     double max_x = -0.001;
     double min_x = -5;
@@ -51,8 +53,8 @@ int main(int argc, char* argv[]){
     std::vector<std::vector<double>> zs_t, zs_spline, zs_spline_ds_num, zs_spline_ds;
 
     // set xy vectors i.e. linspace
-    xs_t = logspace(min_x, max_x, x_n);
-    ys_t = logspace(min_y, max_y, y_n);
+    xs_t = linspace(min_x, max_x, x_n);
+    ys_t = linspace(min_y, max_y, y_n);
     
     // evaluate splines + function
     zs_t = pdfLike(xs_t,ys_t);
@@ -65,7 +67,7 @@ int main(int argc, char* argv[]){
     myfile << "x,y,z,z_spline_ds,z_spline_ds_num,z_spline\n";
     for (  int i = 0; i<y_n; i++){
         for (  int j = 0; j<x_n; j++){
-            myfile<<xs_t[j]<<","<<ys_t[i] << "," << zs_t[i][j] <<"," <<zs_spline_ds[i][j] << "," <<zs_spline_ds_num[i][j] << "," << zs_spline[i][j] << std::endl;
+            myfile<<xs_t[j]<<","<<ys_t[i] << "," << zs_t[i][j] << "," <<zs_spline_ds[i][j]<<","<<zs_spline_ds_num[i][j] << "," << zs_spline[i][j] << std::endl;
         }
     }
     myfile.close();

@@ -1,14 +1,10 @@
 #include "../headers/cubicspline.h"
 
-inline constexpr double power(double base, int exponent) {
-    if (exponent == 0) {
-        return 1;
-    } else if (exponent > 0) {
-        return base * power(base, exponent - 1);
-    } else {
-        return 1 / power(base, -exponent);
-    }
-}
+// fast square function
+inline double square(double x){return x*x;}
+
+// fast cube function
+inline double cube(double x){return x*x*x;}
 
 CubicSpline::CubicSpline(const std::vector<double>& Ts, const std::vector<double>& Ys, double D2t2_start = 0.0, double D2t2_end = 0.0) : N(Ts.size()), _S(N - 1, std::vector<double>(4)), ts(Ts), ys(Ys), d2t2_start(D2t2_start), d2t2_end(D2t2_end)
 {
@@ -116,8 +112,8 @@ double CubicSpline::evaluateSpline(double t, const std::vector<std::vector<doubl
 
     // define ith sub-spline
     subspline = [S, ts](double y,  int j){return ( S[j][0] + S[j][1]*(y - ts[j]) 
-                                        + S[j][2]*power(y - ts[j], 2) 
-                                        + S[j][3]*power(y - ts[j], 3) );};
+                                        + S[j][2]*square(y - ts[j]) 
+                                        + S[j][3]*cube(y - ts[j]) );};
         
     // piecewise define the full spline and evaluate 
     // at input values
@@ -156,8 +152,8 @@ std::vector<double> CubicSpline::evaluateSpline(const std::vector<double>& t, co
 
     // define sub-spline
     subspline = [S, ts](double y,  int j){return ( S[j][0] + S[j][1]*(y - ts[j]) 
-                                    + S[j][2]*power(y - ts[j], 2) 
-                                    + S[j][3]*power(y - ts[j], 3) );};           
+                                    + S[j][2]*square(y - ts[j]) 
+                                    + S[j][3]*cube(y - ts[j]) );};           
     // piecewise define the full spline and evaluate 
     // at input values
     return piecewise(t, its, subspline);
@@ -179,7 +175,6 @@ std::vector<double> CubicSpline::piecewise(const std::vector<double>& t, const s
 
 // Getters
 std::vector<std::vector<double>> CubicSpline::GetS(){return _S;}
-int CubicSpline::GetN(){return N;}
 
 // Setters
 void CubicSpline::SetS(const std::vector<std::vector<double>>& S){_S = S;}
