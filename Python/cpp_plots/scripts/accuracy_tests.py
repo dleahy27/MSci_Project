@@ -15,11 +15,11 @@ if __name__=='__main__':
     fig = plt.figure()
     axs = fig.subplots(1,2)
 
-    plot1 = axs[0].contourf(ms,ns,ts)
+    plot1 = axs[0].pcolormesh(ms,ns,ts)
     axs[0].set_title(r"Processor Time")
     axs[0].label_outer()
     
-    plot2 = axs[1].contourf(ms,ns,errors)
+    plot2 = axs[1].pcolormesh(ms,ns,errors)
     axs[1].set_title(r"Total Error")
     axs[1].label_outer()
     
@@ -44,11 +44,11 @@ if __name__=='__main__':
     axs[1].set_title(r"Total Error")
     axs[1].label_outer()
     
-    plot3 = axs[2].contourf(ns[50,:],ts[50,:])
+    plot3 = axs[2].pcolormesh(ns[50,:],ts[50,:])
     axs[2].set_title(r"Processor Time")
     axs[2].label_outer()
     
-    plot4 = axs[3].contourf(ns[50,:],errors[50,:])
+    plot4 = axs[3].pcolormesh(ns[50,:],errors[50,:])
     axs[3].set_title(r"Total Error")
     axs[3].label_outer()
     
