@@ -245,7 +245,7 @@ std::vector<std::vector<double>> funcs::d1dx_pdfLike(const std::vector<double>& 
     std::vector<std::vector<double>> sol(y.size(), std::vector<double>(x.size()));
     for (int i = 0; i<x.size(); i++) {
         for (int j = 0; j<y.size(); j++){
-            sol[j][i] = (-5*power(1 - std::pow(10,x[i]), 4) - 3*std::pow(10,-4*x[i]))*y[j];
+            sol[j][i] = -(5*power(1 - std::pow(10,x[i]), 4) + 3*std::pow(10,-4*x[i]))*y[j];
         }
     }
 
@@ -258,7 +258,7 @@ std::vector<std::vector<double>> funcs::d1dy_pdfLike(const std::vector<double>& 
 
     for (int i = 0; i<x.size(); i++) {
         for (int j = 0; j<y.size(); j++){
-            sol[j][i] = (1 - std::pow(10,3*x[i]) + std::pow(10,3*x[i])*std::pow((1 - std::pow(10,x[i])), 5)) / (power(std::pow(10,x[i]),3)*std::pow(10,y[j])*std::log(10));
+            sol[j][i] = (-1 + std::pow(10,-3*x[i]) + std::pow((1 - std::pow(10,x[i])), 5)) / (std::pow(10,y[j])*std::log(10));
         }
     }
 
@@ -282,7 +282,7 @@ std::vector<std::vector<double>> funcs::d2dy2_pdfLike(const std::vector<double>&
 
     for (int i = 0; i<x.size(); i++) {
         for (int j = 0; j<y.size(); j++){
-            sol[j][i] = -(1 - std::pow(10,3*x[i]) + std::pow(10,3*x[i])*std::pow((1 - std::pow(10,x[i])), 5)) / (power(std::pow(10,x[i]),3)*power(std::pow(10,y[j]),2));
+            sol[j][i] = -(-1 + std::pow(10,-3*x[i]) + std::pow((1 - std::pow(10,x[i])), 5)) / (power(std::pow(10,y[j]),2)*std::log(10));
         }
     }
 

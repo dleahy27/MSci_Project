@@ -404,7 +404,7 @@ void BicubicSpline::outputDerivs(const std::string& filename){
 // Derivative calculations
 void BicubicSpline::d1X(const std::vector<double>& Xs, const std::vector<double>& Ys, const std::vector<int>& iXs, const std::vector<int>& iYs){
     int iy,ix;
-    double y, x;
+    double y, x, result;
 
     for (int j = 0; j<dn; j++){
         iy = iYs[j];
@@ -413,21 +413,21 @@ void BicubicSpline::d1X(const std::vector<double>& Xs, const std::vector<double>
             ix = iXs[i];
             x = Xs[i];
 
-            d1x[j][i] = (         S[iy][ix][1]
-                                + S[iy][ix][2] * 2 * x + S[iy][ix][3] * 3 * power(x,2)
-                                + S[iy][ix][5] * y
-                                + S[iy][ix][6]  * 2 * x * y    + S[iy][ix][7]  * 3 * power(x,2) * y
-                                + S[iy][ix][9]  * power(y,2)
-                                + S[iy][ix][10] * 2 * x * power(y,2) + S[iy][ix][11] * 3 * power(x,2) * power(y,2)
-                                + S[iy][ix][13] * power(y,3)
-                                + S[iy][ix][14] * 2 * x * power(y,3) + S[iy][ix][15] * 3 * power(x,2) * power(y,3) ) / (std::log(10)*std::pow(10,x));
+            result = 0;
+            for (int k=0; k<4; k++){
+                for (int l=0; l<4; l++){
+                    result += k*S[iy][ix][k + 4*l]*power(x,k-1)*power(y,l);
+                }
+            }
+
+            d1x[j][i] = result / (std::pow(10,x)*std::log(10));
         }
     }
 }
 
 void BicubicSpline::d2X(const std::vector<double>& Xs, const std::vector<double>& Ys, const std::vector<int>& iXs, const std::vector<int>& iYs){
     int iy,ix;
-    double y, x;
+    double y, x, result1, result2;
 
     for (int j = 0; j<dn; j++){
         iy = iYs[j];
@@ -436,17 +436,23 @@ void BicubicSpline::d2X(const std::vector<double>& Xs, const std::vector<double>
             ix = iXs[i];
             x = Xs[i];
 
-            d2x[j][i] = (         S[iy][ix][2] * 2 + S[iy][ix][3] * 3 * 2 * x
-                                + S[iy][ix][6]  * 2 * y    + S[iy][ix][7]  * 3 * 2 * x * y
-                                + S[iy][ix][10] * 2 * power(y,2) + S[iy][ix][11] * 3 * 2 * x * power(y,2)
-                                + S[iy][ix][14] * 2 * power(y,3) + S[iy][ix][15] * 3 * 2 * x * power(y,3) ) / power(std::log(10)*std::pow(10,x),2);
+            result1 = 0;
+            result2 = 0;
+            for (int k=0; k<4; k++){
+                for (int l=0; l<4; l++){
+                    result1 += k*(k-1)*S[iy][ix][k + 4*l]*power(x,k-2)*power(y,l);
+                    result2 += k*S[iy][ix][k + 4*l]*power(x,k-1)*power(y,l);
+                }
+            }
+            
+            d2x[j][i] = (result1 / (std::pow(10,2*x)*power(std::log(10),2))) - (result2 / (std::pow(10,2*x)*std::log(10)));
         }
     }
 }
 
 void BicubicSpline::d3X(const std::vector<double>& Xs, const std::vector<double>& Ys, const std::vector<int>& iXs, const std::vector<int>& iYs){
     int iy,ix;
-    double y, x;
+    double y, x, result1, result2, result3;
 
     for (int j = 0; j<dn; j++){
         iy = iYs[j];
@@ -454,18 +460,26 @@ void BicubicSpline::d3X(const std::vector<double>& Xs, const std::vector<double>
         for (int i = 0; i<dm; i++){
             ix = iXs[i];
             x = Xs[i];
-
-            d3x[j][i] = (         S[iy][ix][3] * 3 * 2
-                                + S[iy][ix][7]  * 3 * 2 * y
-                                + S[iy][ix][11] * 3 * 2 * power(y,2)
-                                + S[iy][ix][15] * 3 * 2 * power(y,3) ) / power(std::log(10)*std::pow(10,x),3);
+            
+            result1 = 0;
+            result2 = 0;
+            result3 = 0;
+            for (int k=0; k<4; k++){
+                for (int l=0; l<4; l++){
+                    result1 += k*(k-1)*(k-2)*S[iy][ix][k + 4*l]*power(x,k-3)*power(y,l);
+                    result2 += k*(k-1)*S[iy][ix][k + 4*l]*power(x,k-2)*power(y,l);
+                    result3 += k*S[iy][ix][k + 4*l]*power(x,k-1)*power(y,l);
+                }
+            }
+            
+            d3x[j][i] = (result1 / (std::pow(10,3*x)*power(std::log(10),3))) - (3*result2 / (std::pow(10,3*x)*power(std::log(10),2))) + (2*result3 / (std::pow(10,3*x)*std::log(10)));
         }
     }
 }
 
 void BicubicSpline::d1Y(const std::vector<double>& Xs, const std::vector<double>& Ys, const std::vector<int>& iXs, const std::vector<int>& iYs){
     int iy,ix;
-    double y, x;
+    double y, x, result;
 
     for (int j = 0; j<dn; j++){
         iy = iYs[j];
@@ -473,20 +487,22 @@ void BicubicSpline::d1Y(const std::vector<double>& Xs, const std::vector<double>
         for (int i = 0; i<dm; i++){
             ix = iXs[i];
             x = Xs[i];
+
+            result = 0;
+            for (int k=0; k<4; k++){
+                for (int l=0; l<4; l++){
+                    result += l*S[iy][ix][l*4 + k]*power(x,k)*power(y,l-1);
+                }
+            }
             
-            d1y[j][i] = (         S[iy][ix][4] + S[iy][ix][5] * x
-                                + S[iy][ix][6] * power(x,2) + S[iy][ix][7] * power(x,3)
-                                + S[iy][ix][8] * 2 * y + S[iy][ix][9]  * x * 2 * y
-                                + S[iy][ix][10] * power(x,2) * 2 * y + S[iy][ix][11] * 2 * y * power(x,3)
-                                + S[iy][ix][12] * 3 * power(y,2) + S[iy][ix][13] * x * 3 * power(y,2)
-                                + S[iy][ix][14] * power(x,2) * 3 * power(y,2) + S[iy][ix][15] * power(x,3) * 3 * power(y,2) ) / (std::log(10)*std::pow(10,y));
+            d1y[j][i] = result / (std::pow(10,y)*std::log(10));
         }
     }
 }
 
 void BicubicSpline::d2Y(const std::vector<double>& Xs, const std::vector<double>& Ys, const std::vector<int>& iXs, const std::vector<int>& iYs){
     int iy,ix;
-    double y, x;
+    double y, x, result1, result2;
 
     for (int j = 0; j<dn; j++){
         iy = iYs[j];
@@ -495,17 +511,23 @@ void BicubicSpline::d2Y(const std::vector<double>& Xs, const std::vector<double>
             ix = iXs[i];
             x = Xs[i];
             
-            d2y[j][i] = (         S[iy][ix][8] * 2 + S[iy][ix][9]  * x * 2
-                                + S[iy][ix][10] * power(x,2) * 2 + S[iy][ix][11] * 2 * power(x,3)
-                                + S[iy][ix][12] * 3 * 2 * y + S[iy][ix][13] * x * 3 * 2 * y
-                                + S[iy][ix][14] * power(x,2) * 3 * 2 * y + S[iy][ix][15] * power(x,3) * 3 * 2 * y ) / power(std::log(10)*std::pow(10,y),2);
+            result1 = 0;
+            result2 = 0;
+            for (int k=0; k<4; k++){
+                for (int l=0; l<4; l++){
+                    result1 += l*(l-1)*S[iy][ix][k + 4*l]*power(x,k)*power(y,l-2);
+                    result2 += l*S[iy][ix][k + 4*l]*power(x,k)*power(y,l-1);
+                }
+            }
+            
+            d2y[j][i] = (result1 / (std::pow(10,2*y)*power(std::log(10),2))) - (result2 / (std::pow(10,2*y)*std::log(10)));
         }
     }
 }
 
 void BicubicSpline::d3Y(const std::vector<double>& Xs, const std::vector<double>& Ys, const std::vector<int>& iXs, const std::vector<int>& iYs){
     int iy,ix;
-    double y, x;
+    double y, x, result1, result2, result3;
 
     for (int j = 0; j<dn; j++){
         iy = iYs[j];
@@ -513,9 +535,19 @@ void BicubicSpline::d3Y(const std::vector<double>& Xs, const std::vector<double>
         for (int i = 0; i<dm; i++){
             ix = iXs[i];
             x = Xs[i];
+
+            result1 = 0;
+            result2 = 0;
+            result3 = 0;
+            for (int k=0; k<4; k++){
+                for (int l=0; l<4; l++){
+                    result1 += l*(l-1)*(l-2)*S[iy][ix][k + 4*l]*power(x,k)*power(y,l-3);
+                    result2 += l*(l-1)*S[iy][ix][k + 4*l]*power(x,k)*power(y,l-2);
+                    result3 += l*S[iy][ix][k + 4*l]*power(x,k)*power(y,l-1);
+                }
+            }
             
-            d3y[j][i] = (   S[iy][ix][12] * 3 * 2 + S[iy][ix][13] * x * 3 * 2
-                          + S[iy][ix][14] * power(x,2) * 3 * 2 + S[iy][ix][15] * power(x,3) * 3 * 2 ) / power(std::log(10)*std::pow(10,y),3);
+            d3y[j][i] = (result1 / (std::pow(10,3*y)*power(std::log(10),3))) - (3*result2 / (std::pow(10,3*y)*power(std::log(10),2))) + (2*result3 / (std::pow(10,3*y)*std::log(10)));
         }
     }
 }
