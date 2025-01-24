@@ -236,7 +236,7 @@ double BicubicSpline::evaluateSpline( double X, double Y ){
     double y = Y;
 
     // initialise array storing function values
-    double splines;
+    double splines, result;
 
     // find indices before which each user input value should be
     // slotted into the arrays of knot coordinates such that the
@@ -249,24 +249,26 @@ double BicubicSpline::evaluateSpline( double X, double Y ){
     // side='right': xs[i] <= x_eval < xs[i+1] as required
     // indices given are those of the knot values before which each
     // input value should be slotted in so need to be shifted back by one
-    int ixs,iys;
-    ixs = std::upper_bound(xs.begin(), xs.end(), x) - xs.begin() - 1;
-    iys = std::upper_bound(ys.begin(), ys.end(), y) - ys.begin() - 1;
+    int ix,iy;
+    ix = std::upper_bound(xs.begin(), xs.end(), x) - xs.begin() - 1;
+    iy = std::upper_bound(ys.begin(), ys.end(), y) - ys.begin() - 1;
     // if final input value equal to (or greater than) the final knot 
     // value, rightmost value evaluates to final index of knot array + 1 
     // so it needs to be shifted back by one more
-    if (x >= xs[xs.size()-1] ){ixs -= 1;}
+    if (x >= xs[xs.size()-1] ){ix -= 1;}
     
-    if (y >= ys[ys.size()-1] ){iys -= 1;}
+    if (y >= ys[ys.size()-1] ){iy -= 1;}
+
+    result = 0;
+    for (int k=0; k<4; k++){
+        for (int l=0; l<4; l++){
+            result += S[iy][ix][k + 4*l]*power(x,k)*power(y,l);
+        }
+    }
+    
     // evaluate spline at (j, i)-th coordinates and store in array
-    splines = (           S[iys][ixs][0]                + S[iys][ixs][1]  * x
-                        + S[iys][ixs][2]  * power(x,2)        + S[iys][ixs][3]  * power(x,3)
-                        + S[iys][ixs][4]         * y    + S[iys][ixs][5]  * x    * y
-                        + S[iys][ixs][6]  * power(x,2) * y    + S[iys][ixs][7]  * power(x,3) * y
-                        + S[iys][ixs][8]         * power(y,2) + S[iys][ixs][9]  * x    * power(y,2)
-                        + S[iys][ixs][10] * power(x,2) * power(y,2) + S[iys][ixs][11] * power(x,3) * power(y,2)
-                        + S[iys][ixs][12]        * power(y,3) + S[iys][ixs][13] * x    * power(y,3)
-                        + S[iys][ixs][14] * power(x,2) * power(y,3) + S[iys][ixs][15] * power(x,3) * power(y,3) );
+    splines = result;
+    
     return splines;
 }
 
@@ -281,7 +283,9 @@ std::vector<std::vector<double>> BicubicSpline::evaluateSpline( const std::vecto
                     User can provide either a single input 
                     value or an array of inputs.
     */
-    int m,n;
+    int m, n, iy, ix;
+
+    double y_val, x_val, result;
 
     n = y.size();
     m = x.size();
@@ -318,16 +322,20 @@ std::vector<std::vector<double>> BicubicSpline::evaluateSpline( const std::vecto
 
     // loop over input coordinates
     for ( int i=0; i<n; i++ ){
+        iy = iys[i];
+        y_val = y[i];
         for ( int j=0; j<m; j++ ){
+            ix = ixs[j];
+            x_val = x[j];
+
+            result = 0;
+            for (int k=0; k<4; k++){
+                for (int l=0; l<4; l++){
+                    result += S[iy][ix][k + 4*l]*power(x_val,k)*power(y_val,l);
+                }
+            }
             // evaluate spline at (j, i)-th coordinates and store in array
-            splines[i][j] = (   S[iys[i]][ixs[j]][0]                + S[iys[i]][ixs[j]][1]  * x[j]
-                                + S[iys[i]][ixs[j]][2]  * power(x[j],2)        + S[iys[i]][ixs[j]][3]  * power(x[j],3)
-                                + S[iys[i]][ixs[j]][4]         * y[i]    + S[iys[i]][ixs[j]][5]  * x[j]    * y[i]
-                                + S[iys[i]][ixs[j]][6]  * power(x[j],2) * y[i]    + S[iys[i]][ixs[j]][7]  * power(x[j],3) * y[i]
-                                + S[iys[i]][ixs[j]][8]         * power(y[i],2) + S[iys[i]][ixs[j]][9]  * x[j]    * power(y[i],2)
-                                + S[iys[i]][ixs[j]][10] * power(x[j],2) * power(y[i],2) + S[iys[i]][ixs[j]][11] * power(x[j],3) * power(y[i],2)
-                                + S[iys[i]][ixs[j]][12]        * power(y[i],3) + S[iys[i]][ixs[j]][13] * x[j]    * power(y[i],3)
-                                + S[iys[i]][ixs[j]][14] * power(x[j],2) * power(y[i],3) + S[iys[i]][ixs[j]][15] * power(x[j],3) * power(y[i],3) );
+            splines[i][j] = result;
         }
     }
         
