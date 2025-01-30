@@ -21,7 +21,7 @@ if __name__ == '__main__':
     
     y,an_d2x_left, an_d2x_right = np.loadtxt("/mnt/c/Users/dillo/Desktop/work/Uni/Year_5/Project/Code/MSci_Project/C++/outputs/an_bound_d2x.csv", dtype='float', delimiter=',', unpack=True, skiprows=1)
     x,an_d2y_top, an_d2y_bottom = np.loadtxt("/mnt/c/Users/dillo/Desktop/work/Uni/Year_5/Project/Code/MSci_Project/C++/outputs/an_bound_d2y.csv", dtype='float', delimiter=',', unpack=True, skiprows=1)
-    an_d4d2xd2y = np.loadtxt("/mnt/c/Users/dillo/Desktop/work/Uni/Year_5/Project/Code/MSci_Project/C++/outputs/an_bound_corners.csv.csv", dtype='float', delimiter=',', unpack=True, skiprows=1, usecols=[2])
+    an_d4d2xd2y = np.loadtxt("/mnt/c/Users/dillo/Desktop/work/Uni/Year_5/Project/Code/MSci_Project/C++/outputs/an_bound_corners.csv", dtype='float', delimiter=',', unpack=True, skiprows=1, usecols=[2])
     
     # Boundaries
     fig = plt.figure(figsize=(10,10))

@@ -9,8 +9,8 @@ if __name__ == '__main__':
     xs,ys,num_d1x, num_d1y, num_d2x, num_d2y, num_d3x, num_d3y = np.loadtxt("/mnt/c/Users/dillo/Desktop/work/Uni/Year_5/Project/Code/MSci_Project/C++/outputs/num_ds_pdf.csv", dtype='float', delimiter=',', unpack=True, skiprows=1)
     
     # imported data is 1D columns
-    sizex = 53
-    sizey = 53
+    sizex = 153
+    sizey = 153
     
     xs = xs.reshape((sizey,sizex))
     ys = ys.reshape((sizey,sizex))       

@@ -59,4 +59,6 @@ namespace funcs{
     Derivatives pdfBoundaryDerivatives( const std::vector<double>& xs, const std::vector<double>& ys );
 
     void outputPdfBoundaryDerivatives( const std::vector<double>& x, const std::vector<double>& y, const Derivatives& derivs );
+
+    double logx_deriv(double x, double y);
 }

@@ -45,8 +45,8 @@ if __name__ == '__main__':
     
     
     # imported data is 1D columns
-    sizex = 53
-    sizey = 53    
+    sizex = 153
+    sizey = 153    
     x = x.reshape((sizey,sizex))
     y = y.reshape((sizey,sizex))
     

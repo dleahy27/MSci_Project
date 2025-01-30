@@ -29,7 +29,7 @@ int main(int argc, char* argv[]){
     // scalar field values
     std::vector<std::vector<double>> z = pdfLike(x,y);
     // analytic derivatives
-    Derivatives ds = deriv_pdfLike(x,y);
+    Derivatives ds = pdfBoundaryDerivatives(x,y);
     outputPdfBoundaryDerivatives(x,y, ds);
 
     // numerical derivatives
@@ -46,8 +46,8 @@ int main(int argc, char* argv[]){
 
     // array of values test
     // initialisations
-    int y_n = 53;
-    int x_n = 53;
+    int y_n = 153;
+    int x_n = 153;
     double max_x = -0.001;
     double min_x = -5;
     double max_y = 8;

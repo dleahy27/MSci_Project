@@ -415,23 +415,17 @@ Derivatives funcs::pdfBoundaryDerivatives( const std::vector<double>& xs, const 
     ds.d4x2y2s_corners.reserve(4);
 
     double x, y;
-
-    double Log10 = std::log(10);
-    double Log5 = std::log(5);
-    double Log2 = std::log(2);
-    double Logsq10 = Log10*Log10;
-
-    auto logx_deriv = [x,y,Log10,Log5,Log2,Logsq10] { return (-std::pow(2,x) * std::pow(5,1+x) * std::pow(-1 + std::pow(10, x), 4) * Log10 * (Log2 + Log5) + Logsq10 * (9 * std::pow(10,-3*x) - std::pow(4, 1+x) * std::pow(5,1+2*x) * std::pow(-1 + std::pow(10, x), 3)))*y;};
-    for ( int i = 0; i<m; i++){
+    
+    for ( int i = 0; i<n; i++){
         y = ys[i];
 
         x = xs[0];
-        ds.d2x2s_left.push_back(logx_deriv());
+        ds.d2x2s_left.push_back(logx_deriv(x,y));
         x = xs[m-1];
-        ds.d2x2s_right.push_back(logx_deriv());
+        ds.d2x2s_right.push_back(logx_deriv(x,y));
     }
 
-    for ( int i = 0; i<n; i++){       
+    for ( int i = 0; i<m; i++){       
         ds.d2y2s_bottom.push_back(0);
         ds.d2y2s_top.push_back(0);
     }
@@ -445,11 +439,12 @@ Derivatives funcs::pdfBoundaryDerivatives( const std::vector<double>& xs, const 
 }
 
 void funcs::outputPdfBoundaryDerivatives( const std::vector<double>& x, const std::vector<double>& y, const Derivatives& derivs ){
+
     int n = y.size();
     int m = x.size();
 
     std::ofstream myfile;
-    myfile.open("../outputs/an_bound_d2y");
+    myfile.open("../outputs/an_bound_d2y.csv");
     myfile << "x,d2y_top,d2y_bottom"<<std::endl;
     for(int i = 0; i<m; i++){
         myfile<<x[i]<<","<<derivs.d2y2s_top[i]<<","<<derivs.d2y2s_bottom[i]<<std::endl;
@@ -457,7 +452,7 @@ void funcs::outputPdfBoundaryDerivatives( const std::vector<double>& x, const st
     myfile.close();
 
     std::ofstream myfile2;
-    myfile2.open("../outputs/an_bound_d2x");
+    myfile2.open("../outputs/an_bound_d2x.csv");
     myfile2 << "y,d2x_left,d2x_right"<<std::endl;
     for(int i = 0; i<n; i++){
         myfile2<<y[i]<<","<<derivs.d2x2s_left[i]<<","<<derivs.d2x2s_right[i]<<std::endl;
@@ -465,11 +460,20 @@ void funcs::outputPdfBoundaryDerivatives( const std::vector<double>& x, const st
     myfile2.close();
 
     std::ofstream myfile3;
-    myfile3.open("../outputs/an_bound_corners");
+    myfile3.open("../outputs/an_bound_corners.csv");
     myfile3 << "x,y,d4d2xd2y"<<std::endl;
     myfile3<<x[0]<<","<<y[0]<<","<<derivs.d4x2y2s_corners[0]<<std::endl;
     myfile3<<x[m]<<","<<y[0]<<","<<derivs.d4x2y2s_corners[1]<<std::endl;
     myfile3<<x[m]<<","<<y[n]<<","<<derivs.d4x2y2s_corners[2]<<std::endl;
     myfile3<<x[0]<<","<<y[n]<<","<<derivs.d4x2y2s_corners[3]<<std::endl;
     myfile3.close();
+}
+
+double funcs::logx_deriv(double x, double y) {
+    double term1 = -std::pow(2, x) * std::pow(5, 1 + x) * std::pow(1 - std::pow(10, x), 4) * std::log(2) * std::log(10);
+    double term2 = std::pow(2, x) * std::pow(5, 1 + x) * std::pow(1 - std::pow(10, x), 4) * std::log(5) * std::log(10);
+    double term3 = 9 * std::pow(10, -3*x) * std::pow(std::log(10), 2);
+    double term4 = std::pow(2, 2 + 2 * x) * std::pow(5, 1 + 2 * x) * std::pow(1 - std::pow(10, x), 3) * std::pow(std::log(10), 2);
+    
+    return y*(term1 - term2 + term3 + term4);
 }
