@@ -8,7 +8,6 @@ plt.rcParams["text.usetex"] = True
 def dynamicColorbar(z):
     # 5% and 95% quantiles
     minmax = mquantiles(z, prob=[0.1,0.9])
-    print(minmax)
     # colorbar norm, levels and ticks set to each case
     # Bigger negative value
     if ( np.abs(minmax[0]) > np.abs(minmax[1]) ):
@@ -43,20 +42,25 @@ if __name__ == '__main__':
     x_c,y_c,z_c,z_cds,z_cds_num,z_cspline = np.loadtxt("/mnt/c/Users/dillo/Desktop/work/Uni/Year_5/Project/Code/MSci_Project/C++/outputs/pdfLike_bicubic.csv", dtype='float64', delimiter=',', unpack=True, skiprows=1)
     
     # imported data is 1D columns
-    sizex = 101
-    sizey = 101
+    sizex = 153
+    sizey = 153
     x_c = x_c.reshape((sizey,sizex))
+    # x_c = x_c[:,:]
     y_c = y_c.reshape((sizey,sizex))
+    # y_c = y_c[:, 2:]
     z_c = z_c.reshape((sizey,sizex))
+    # z_c = z_c[:, 2:]
     z_cds = z_cds.reshape((sizey,sizex))
+    # z_cds = z_cds[:, 2:]
     z_cds_num = z_cds_num.reshape((sizey,sizex))
+    # z_cds_num = z_cds_num[:, 2:]
     z_cspline = z_cspline.reshape((sizey,sizex))
+    # z_cspline = z_cspline[:, 2:]
     
     # calculate percentage errors
     ratio = (z_c/z_cspline - 1)*100
     ratio_ds = (z_c/z_cds - 1)*100
     ratio_ds_num = (z_c/z_cds_num - 1)*100
-    print(ratio_ds_num == ratio)
     
     
     # Plot data

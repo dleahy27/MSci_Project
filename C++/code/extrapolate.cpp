@@ -20,9 +20,9 @@ double Extrapolate::secondDerivPower(double x, const Coeffs& coeffs) {
     if (coeffs.b == 1){
         return 0;
     } else if ( x - coeffs.x0<0 ){
-        return -coeffs.a*coeffs.b * ( -(coeffs.b - 1)*std::pow(-x + coeffs.x0, coeffs.b - 2) - std::log(10)*std::pow((coeffs.x0 - x),coeffs.b - 1) ) / (std::pow(10,2*x)*std::log(10)*std::log(10));
+        return coeffs.a*coeffs.b *(coeffs.b - 1)*std::pow(-x + coeffs.x0, coeffs.b - 2);
     }else if ( x - coeffs.x0>0 ){
-        return  coeffs.a*coeffs.b * ( (coeffs.b - 1)*std::pow(x - coeffs.x0, coeffs.b - 2) - std::log(10)*std::pow((x - coeffs.x0),coeffs.b - 1) ) / (std::pow(10,2*x)*std::log(10)*std::log(10));
+        return  coeffs.a*coeffs.b *(coeffs.b - 1)*std::pow(x - coeffs.x0, coeffs.b - 2);
     }else {
         return 0;
     }

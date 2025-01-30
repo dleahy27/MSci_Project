@@ -7,6 +7,8 @@
 #include <random>
 #include "../headers/derivatives.h"
 
+// File containing functions used within testing program
+//! Nothing here is used within the bicubic algorithm
 namespace funcs{
     std::vector<double> random_uniform(double start, double end, unsigned int N);
 
@@ -53,4 +55,8 @@ namespace funcs{
     void outputTrigDerivatives( const std::vector<double>& x, const std::vector<double>& y, const std::string& filename );
 
     void outputPdfDerivatives( const std::vector<double>& x, const std::vector<double>& y, const std::string& filename);
+
+    Derivatives pdfBoundaryDerivatives( const std::vector<double>& xs, const std::vector<double>& ys );
+
+    void outputPdfBoundaryDerivatives( const std::vector<double>& x, const std::vector<double>& y, const Derivatives& derivs );
 }
