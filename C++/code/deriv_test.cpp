@@ -30,7 +30,7 @@ int main(int argc, char* argv[]){
     std::vector<std::vector<double>> z = pdfLike(x,y);
     // analytic derivatives
     Derivatives ds = deriv_pdfLike(x,y);
-    outputPdfDerivatives(x,y,"an_boundary_derivs.csv");
+    outputPdfBoundaryDerivatives(x,y, ds);
 
     // numerical derivatives
     Derivatives ds_num;
@@ -40,7 +40,7 @@ int main(int argc, char* argv[]){
 
     // initialisation of class test both with derivaties and without
     // BicubicSpline spline(x,y,z);
-    BicubicSpline spline_ds(x,y,z,ds);
+    // BicubicSpline spline_ds(x,y,z,ds);
     BicubicSpline spline_ds_num(x,y,z,ds_num);
 
 
@@ -65,11 +65,11 @@ int main(int argc, char* argv[]){
     outputPdfDerivatives(xs_t,ys_t,"analytical_ds_pdf.csv");
 
     spline_ds_num.calculateDerivs(xs_t,ys_t);
-    spline_ds.calculateDerivs(xs_t,ys_t);
+    // spline_ds.calculateDerivs(xs_t,ys_t);
     // spline.calculateDerivs(xs_t,ys_t);
 
     spline_ds_num.outputDerivs("num_ds_pdf.csv");
-    spline_ds.outputDerivs("an_ds_pdf.csv");
+    // spline_ds.outputDerivs("an_ds_pdf.csv");
     // spline.outputDerivs("zero_ds_pdf.csv");
     
     return 0;

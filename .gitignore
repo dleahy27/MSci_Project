@@ -62,6 +62,7 @@ Thumbs.db
 # Data #
 ########
 *.root
+*.csv
 dataset*/
 
 # Old copies of files #
@@ -76,17 +77,19 @@ LHAPDF-6.5.4
 LHAPDF
 .vscode
 
+C++/test
+
+
 
 # Images #
 ##################
-*.pdg
 *.jpeg
 *.png
+*.pdf
 
 # Compiled code #
 ##################
 *.out
-test_*
 
 # Scripts #
 ##################

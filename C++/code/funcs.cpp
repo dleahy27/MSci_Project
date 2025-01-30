@@ -456,20 +456,20 @@ void funcs::outputPdfBoundaryDerivatives( const std::vector<double>& x, const st
     }
     myfile.close();
 
-    std::ofstream myfile;
-    myfile.open("../outputs/an_bound_d2x");
-    myfile << "y,d2x_left,d2x_right"<<std::endl;
+    std::ofstream myfile2;
+    myfile2.open("../outputs/an_bound_d2x");
+    myfile2 << "y,d2x_left,d2x_right"<<std::endl;
     for(int i = 0; i<n; i++){
-        myfile<<y[i]<<","<<derivs.d2x2s_left[i]<<","<<derivs.d2x2s_right[i]<<std::endl;
+        myfile2<<y[i]<<","<<derivs.d2x2s_left[i]<<","<<derivs.d2x2s_right[i]<<std::endl;
     }
-    myfile.close();
+    myfile2.close();
 
-    std::ofstream myfile;
-    myfile.open("../outputs/an_bound_corners");
-    myfile << "x,y,d4d2xd2y"<<std::endl;
-    myfile<<x[0]<<","<<y[0]<<","<<derivs.d4x2y2s_corners[0]<<std::endl;
-    myfile<<x[m]<<","<<y[0]<<","<<derivs.d4x2y2s_corners[1]<<std::endl;
-    myfile<<x[m]<<","<<y[n]<<","<<derivs.d4x2y2s_corners[2]<<std::endl;
-    myfile<<x[0]<<","<<y[n]<<","<<derivs.d4x2y2s_corners[3]<<std::endl;
-    myfile.close();
+    std::ofstream myfile3;
+    myfile3.open("../outputs/an_bound_corners");
+    myfile3 << "x,y,d4d2xd2y"<<std::endl;
+    myfile3<<x[0]<<","<<y[0]<<","<<derivs.d4x2y2s_corners[0]<<std::endl;
+    myfile3<<x[m]<<","<<y[0]<<","<<derivs.d4x2y2s_corners[1]<<std::endl;
+    myfile3<<x[m]<<","<<y[n]<<","<<derivs.d4x2y2s_corners[2]<<std::endl;
+    myfile3<<x[0]<<","<<y[n]<<","<<derivs.d4x2y2s_corners[3]<<std::endl;
+    myfile3.close();
 }
