@@ -8,8 +8,10 @@
 #include "../headers/finitederivatives.h"
 #include "../headers/funcs.h"
 #include "../headers/derivatives.h"
+#include "../headers/sample.h"
 
 using namespace funcs;
+using namespace sample;
 
 inline void timeTest(const std::vector<double>& x, const std::vector<double>& y, const std::vector<std::vector<double>>& z, const std::vector<double>& xs_t, const std::vector<double>& ys_t, const Derivatives& ds_num){
     

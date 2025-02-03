@@ -55,17 +55,19 @@ def dataInit(name, plot_nx, plot_ny, x_axes, y_axes, i, j, k, l):
     
     median_error = np.median(ratio.flatten())
     
-    # X Scaling Plots
-    if ((plot_nx == i).any() and j == int(2*np.max(plot_ny)/3) ):
-        plotGridx(x_axes, k, x, y, z_num, nx, median_error)
-        k += 1
-        return nx,ny,median_error, k, l
-    
-    # Y Scaling Plots
-    if ((plot_ny == j).any() and i == int(2*np.max(plot_nx)/3)):
-        plotGridx(y_axes, l, x, y, z_num, ny, median_error)
-        l += 1
-        return nx,ny,median_error, k, l
+    scaling = False
+    if scaling:
+        # X Scaling Plots
+        if ((plot_nx == i).any() and j == int(2*np.max(plot_ny)/3) ):
+            plotGridx(x_axes, k, x, y, z_num, nx, median_error)
+            k += 1
+            return nx,ny,median_error, k, l
+        
+        # Y Scaling Plots
+        if ((plot_ny == j).any() and i == int(2*np.max(plot_nx)/3)):
+            plotGridx(y_axes, l, x, y, z_num, ny, median_error)
+            l += 1
+            return nx,ny,median_error, k, l
     
     return nx,ny,median_error, k,l
 
@@ -78,9 +80,9 @@ def plotGridx(axes,k,x,y,z, nx, median):
     Y = y.reshape((sizey,sizex))
     Z = z.reshape((sizey,sizex))
     
-    X = X[:,2:]
-    Y = Y[:,2:]
-    Z = Z[:,2:]
+    X = X[:,]
+    Y = Y[:,]
+    Z = Z[:,]
 
     x = X.flatten()
     y = Y.flatten()

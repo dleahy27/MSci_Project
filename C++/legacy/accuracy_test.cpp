@@ -8,8 +8,10 @@
 #include "../headers/finitederivatives.h"
 #include "../headers/funcs.h"
 #include "../headers/derivatives.h"
+#include "../headers/sample.h"
 
 using namespace funcs;
+using namespace sample;
 
 double splineError(const std::vector<std::vector<double>>& z1, const std::vector<std::vector<double>>& z2){
     double err;
@@ -44,8 +46,8 @@ int main(int argc, char* argv[]){
     int m_max = 151;
     int n_max = 151;
 
-    ms = initialisation(m_min, m_max, 101);
-    ns = initialisation(n_min, n_max, 101);
+    ms = linspace(m_min, m_max, 101);
+    ns = linspace(n_min, n_max, 101);
     // array of values test
     // initialisations
     int y_n = 27;
@@ -57,8 +59,8 @@ int main(int argc, char* argv[]){
     std::vector<double> xs_t, ys_t;
 
     // set xy vectors i.e. linspace
-    xs_t = initialisation(min_x, max_x, x_n);
-    ys_t = initialisation(min_y, max_y, y_n); 
+    xs_t = linspace(min_x, max_x, x_n);
+    ys_t = linspace(min_y, max_y, y_n); 
     
     std::ofstream myfile;
     myfile.open("../outputs/accuracy_test.csv");
@@ -68,8 +70,8 @@ int main(int argc, char* argv[]){
         //for (int j = 0; j<ns.size(); j++){
         myfile<<ms[i]<<","<<ns[i]<<",";
 
-        std::vector<double> x = initialisation(x_min,x_max,ms[i]);
-        std::vector<double> y = initialisation(y_min,y_max,ns[i]);
+        std::vector<double> x = linspace(x_min,x_max,ms[i]);
+        std::vector<double> y = linspace(y_min,y_max,ns[i]);
 
         std::vector<std::vector<double>>z = gauss(x,y);
 

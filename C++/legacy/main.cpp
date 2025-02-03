@@ -7,8 +7,10 @@
 #include "../headers/finitederivatives.h"
 #include "../headers/funcs.h"
 #include "../headers/derivatives.h"
+#include "../headers/sample.h"
 
 using namespace funcs;
+using namespace sample;
 
 int main(int argc, char* argv[]){
     // Initialisations
@@ -22,8 +24,8 @@ int main(int argc, char* argv[]){
 
     
     // fill grid knot arrays i.e. linspace
-    x = initialisation(x_min,x_max,x_num);
-    y = initialisation(y_min,y_max,y_num);
+    x = linspace(x_min,x_max,x_num);
+    y = linspace(y_min,y_max,y_num);
     
     // scalar field values
     std::vector<std::vector<double>> z = gauss(x,y);
@@ -53,8 +55,8 @@ int main(int argc, char* argv[]){
     std::vector<std::vector<double>> zs_t, zs_spline, zs_spline_ds_num, zs_spline_ds;
 
     // set xy vectors i.e. linspace
-    xs_t = initialisation(min_x, max_x, x_n);
-    ys_t = initialisation(min_y, max_y, y_n);
+    xs_t = linspace(min_x, max_x, x_n);
+    ys_t = linspace(min_y, max_y, y_n);
     
     // evaluate splines + function
     zs_t = gauss(xs_t,ys_t);

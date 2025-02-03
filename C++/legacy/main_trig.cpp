@@ -5,8 +5,10 @@
 #include "../headers/finitederivatives.h"
 #include "../headers/funcs.h"
 #include "../headers/derivatives.h"
+#include "../headers/sample.h"
 
 using namespace funcs;
+using namespace sample;
 
 int main(int argc, char* argv[]){
     // Initialisations
