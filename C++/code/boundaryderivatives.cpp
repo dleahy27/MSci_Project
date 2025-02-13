@@ -15,7 +15,7 @@ inline constexpr double power(double base, int exponent) {
 }
 
 // constructor
-BoundaryDerivatives::BoundaryDerivatives(const std::vector<double>& X, const std::vector<double>& Y, const std::vector<std::vector<double>>& Z) : x(X), y(Y), z(Z), m(x.size()), n(y.size()), d2_left(n), d2_right(n), d2_bottom(m), d2_top(m), d4y2x2(4) {
+BoundaryDerivatives::BoundaryDerivatives(const std::vector<double>& X, const std::vector<double>& Y, const std::vector<std::vector<double>>& Z) : x(X), y(Y), z(Z), m(x.size()), n(y.size()), d2_left(n), d2_right(n), d2_bottom(m), d2_top(m), d4y2x2(4), z_left(n), z_right(n), z_bottom(m), z_top(m) {
     // calculate boundary derivatives
     partialDerivative2Y();
     partialDerivative2X();
@@ -27,40 +27,44 @@ BoundaryDerivatives::BoundaryDerivatives(const std::vector<double>& X, const std
 // Second y partial
 void BoundaryDerivatives::partialDerivative2Y() {
     // Extrapolate to boundary 
-    std::vector<double> tempVec1 = {y[3],y[2],y[1]};
-    std::vector<double> tempVec3 = {y[n-4],y[n-3],y[n-2]};
+    std::vector<double> tempVec1 = {y[2],y[1],y[0]};
+    std::vector<double> tempVec3 = {y[n-3],y[n-2],y[n-1]};
     for (int i = 0; i < m; i++) {
-        std::vector<double> tempVec2 = {z[3][i],z[2][i],z[1][i]};
-        std::vector<double> tempVec4 = {z[n-4][i],z[n-3][i],z[n-2][i]};
+        std::vector<double> tempVec2 = {z[2][i],z[1][i],z[0][i]};
+        std::vector<double> tempVec4 = {z[n-3][i],z[n-2][i],z[n-1][i]};
 
         Extrapolate fit1(tempVec1, tempVec2);
         fit1.extrapolatePowerLaw(y[0]);
         Extrapolate fit2(tempVec3, tempVec4);
         fit2.extrapolatePowerLaw(y[n-1]);
 
-        //std::cout<<fit1.solution<<std::endl;
         d2_bottom[i] = fit1.solution;
         d2_top[i] = fit2.solution;
+
+        z_bottom[i] = fit1.powerLawZs(y[0]);
+        z_top[i] = fit2.powerLawZs(y[n-1]);
     }
 }
 
 // Second x partial
 void BoundaryDerivatives::partialDerivative2X() {
     // Extrapolate to boundary 
-    std::vector<double> tempVec1 = {x[3],x[2],x[1]};
-    std::vector<double> tempVec3 = {x[m-4],x[m-3],x[m-2]};
+    std::vector<double> tempVec1 = {x[1],x[0]};
+    std::vector<double> tempVec3 = {x[m-2],x[m-1]};
     for (int j = 0; j < n; j++) {
-        std::vector<double> tempVec2 = {z[j][3],z[j][2],z[j][1]};
-        std::vector<double> tempVec4 = {z[j][m-4],z[j][m-3],z[j][m-2]};
+        std::vector<double> tempVec2 = {z[j][1],z[j][0]}; 
+        std::vector<double> tempVec4 = {z[j][m-3],z[j][m-2],z[j][m-1]};
         
         Extrapolate fit1(tempVec1, tempVec2);
-        fit1.extrapolatePowerLaw(x[0]);
+        fit1.extrapolateTenPowerLaw(x[0]);
         Extrapolate fit2(tempVec3, tempVec4);
-        fit2.extrapolatePowerLaw(x[m-1]);
+        fit2.extrapolateTenPowerLaw(x[m-1]);
 
-        //std::cout<<fit1.solution<<std::endl;
         d2_left[j] = fit1.solution;
         d2_right[j] = fit2.solution;
+
+        z_left[j] = fit1.tenPowerLawZs(x[0]);
+        z_right[j] = fit2.tenPowerLawZs(x[m-1]);
     }
 }
 
@@ -120,5 +124,30 @@ void BoundaryDerivatives::outputCornerDerivs(std::string filename){
     myfile<<x[m]<<","<<y[0]<<","<<d4y2x2[1]<<std::endl;
     myfile<<x[m]<<","<<y[n]<<","<<d4y2x2[2]<<std::endl;
     myfile<<x[0]<<","<<y[n]<<","<<d4y2x2[3]<<std::endl;
+    myfile.close();
+}
+
+void BoundaryDerivatives::outputZs(std::string filename){
+    outputLeftRightZs(filename);
+    outputTopBottomZs(filename); 
+}
+
+void BoundaryDerivatives::outputLeftRightZs(std::string filename){
+    std::ofstream myfile;
+    myfile.open("../outputs/tb_"+filename);
+    myfile << "x,z_top,z_bottom"<<std::endl;
+    for(int i = 0; i<m; i++){
+        myfile<<x[i]<<","<<z_top[i]<<","<<z_bottom[i]<<std::endl;
+    }
+    myfile.close();
+}
+
+void BoundaryDerivatives::outputTopBottomZs(std::string filename){
+    std::ofstream myfile;
+    myfile.open("../outputs/lr_"+filename);
+    myfile << "y,z_left,z_right"<<std::endl;
+    for(int i = 0; i<n; i++){
+        myfile<<y[i]<<","<<z_left[i]<<","<<z_right[i]<<std::endl;
+    }
     myfile.close();
 }

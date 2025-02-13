@@ -28,6 +28,7 @@ int main(int argc, char* argv[]){
     
     // scalar field values
     std::vector<std::vector<double>> z = pdfLike(x,y);
+    outputZs(x,y,z, "derivtest_grid.csv");
     // analytic derivatives
     Derivatives ds = pdfBoundaryDerivatives(x,y);
     outputPdfBoundaryDerivatives(x,y, ds);
@@ -37,6 +38,7 @@ int main(int argc, char* argv[]){
     BoundaryDerivatives ds_num_temp(x,y,z);
     ds_num = ds_num_temp.boundary_derivatives;
     ds_num_temp.outputDerivs("boundary_derivs.csv");
+    ds_num_temp.outputZs("boundary_zs.csv");
 
     // initialisation of class test both with derivaties and without
     // BicubicSpline spline(x,y,z);

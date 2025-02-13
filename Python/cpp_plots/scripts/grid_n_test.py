@@ -234,7 +234,7 @@ if __name__ == '__main__':
     fig  = plt.figure(figsize=(8,8))
     axes = fig.subplots(1,1)
     
-    plot1 = axes.pcolormesh(nxs,nys,medians)
+    plot1 = axes.pcolormesh(nxs,nys,medians, rasterized=True)
     # axes[0].set_title(r"Median Relative Error", fontsize=title_size)
     axes.set_xlabel(r"X Grid Points")
     axes.set_ylabel(r"Y Grid Points")
@@ -243,5 +243,5 @@ if __name__ == '__main__':
     
     cb1.set_label(r"Median Relative Error ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
     
-    fig.savefig("../outputs/grid_n_test/Error_Scale.pdf", dpi=200, format="pdf")
+    fig.savefig("../outputs/grid_n_test/Error_Scale.pdf", dpi=400, format="pdf")
     

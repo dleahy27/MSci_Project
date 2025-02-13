@@ -50,6 +50,11 @@ class BoundaryDerivatives{
     /// Corner derivatives
     std::vector<double> d4y2x2;
 
+    std::vector<double> z_left;
+    std::vector<double> z_right;
+    std::vector<double> z_top;
+    std::vector<double> z_bottom;
+
     /// Grid boundary derivatives struct
     Derivatives boundary_derivatives;
 
@@ -67,4 +72,11 @@ class BoundaryDerivatives{
     void outputYDerivs(std::string filename);
 
     void outputCornerDerivs(std::string filename);
+
+    /// Outputs all the extrapolated z boundaries as a csv
+    void outputZs(std::string filename);
+    
+    void outputLeftRightZs(std::string filename);
+
+    void outputTopBottomZs(std::string filename);
 };

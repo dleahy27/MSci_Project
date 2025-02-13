@@ -44,10 +44,10 @@ void pdfTest(int x_num, int y_num, int n){
     // initialisations
     int y_n = 101;
     int x_n = 101;
-    double max_x = -0.001;
-    double min_x = -5;
-    double max_y = 8;
-    double min_y = 1;
+    double max_x = -0.0011;
+    double min_x = -4.99;
+    double max_y = 7.99;
+    double min_y = 1.01;
 
     std::vector<double> xs_t, ys_t;
     std::vector<std::vector<double>> zs_t, zs_spline_ds_num;

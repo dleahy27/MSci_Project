@@ -477,3 +477,15 @@ double funcs::logx_deriv(double x, double y) {
     
     return y*(term1 - term2 + term3 + term4);
 }
+
+void funcs::outputZs( const std::vector<double>& x, const std::vector<double>& y, const std::vector<std::vector<double>>& z, const std::string filename){
+    std::ofstream myfile;
+    myfile.open("../outputs/"+filename);
+    myfile << "x,y,z"<<std::endl;
+    for(int i = 0; i<y.size(); i++){
+        for(int j = 0; j<x.size(); j++){
+            myfile<<x[j]<<","<<y[i]<<","<<z[i][j]<<std::endl;
+        }
+    }
+    myfile.close();
+}

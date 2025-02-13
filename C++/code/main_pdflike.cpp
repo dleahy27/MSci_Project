@@ -12,8 +12,8 @@ using namespace sample;
 
 int main(int argc, char* argv[]){
     // Initialisations
-    int x_num = 19;
-    int y_num = 19;
+    int x_num = 27;
+    int y_num = 27;
     double x_max = -0.0001;
     double x_min = -5;
     double y_max = 8;

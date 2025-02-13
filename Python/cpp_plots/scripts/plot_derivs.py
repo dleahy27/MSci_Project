@@ -90,23 +90,27 @@ if __name__ == '__main__':
     axs = fig.subplots(2,2).flatten()
     
     norm,levels,ticks1 = dynamicColorbar(ratio1) # Each has seprate colorbar as they model different things
-    plot1 = axs[0].pcolormesh(x,y,ratio1, norm=norm, cmap="seismic")
-    axs[0].set_title(r"$\Delta \partial_x z$", fontsize=title_size)
+    plot1 = axs[0].pcolormesh(x,y,ratio1, norm=norm, cmap="seismic", rasterized=True)
+    #axs[0].set_title(r"$\Delta \partial_x xf(x,Q)$", fontsize=title_size)
+    axs[0].set_xlabel(r"(a)")
     axs[0].label_outer()
     
     norm,levels,ticks2 = dynamicColorbar(ratio2) # Each has seprate colorbar as they model different things
-    plot2 = axs[1].pcolormesh(x,y,ratio2, norm=norm, cmap="seismic")
-    axs[1].set_title(r"$\Delta\partial_y z$", fontsize=title_size)
+    plot2 = axs[1].pcolormesh(x,y,ratio2, norm=norm, cmap="seismic", rasterized=True)
+    #axs[1].set_title(r"$\Delta\partial_Q xf(x,Q)$", fontsize=title_size)
+    axs[1].set_xlabel(r"(b)")
     axs[1].label_outer()
     
     norm,levels,ticks3 = dynamicColorbar(ratio3) # Each has seprate colorbar as they model different things
-    plot3 = axs[2].pcolormesh(x,y,ratio3, norm=norm, cmap="seismic")
-    axs[2].set_title(r"$\Delta \partial^2_x z$", fontsize=title_size)
+    plot3 = axs[2].pcolormesh(x,y,ratio3, norm=norm, cmap="seismic", rasterized=True)
+    #axs[2].set_title(r"$\Delta \partial^2_x xf(x,Q)$", fontsize=title_size)
+    axs[2].set_xlabel(r"(c)")
     axs[2].label_outer()
     
     norm,levels,ticks4 = dynamicColorbar(ratio4) # Each has seprate colorbar as they model different things
-    plot4 = axs[3].pcolormesh(x,y,ratio4, norm=norm, cmap="seismic")
-    axs[3].set_title(r"$\Delta\partial^2_y z$", fontsize=title_size)
+    plot4 = axs[3].pcolormesh(x,y,ratio4, norm=norm, cmap="seismic", rasterized=True)
+    #axs[3].set_title(r"$\Delta\partial^2_Q xf(x,Q)$", fontsize=title_size)
+    axs[3].set_xlabel(r"(d)")
     axs[3].label_outer()
     
     cb1 = plt.colorbar(plot1, ax=axs[0], ticks=ticks1)
@@ -114,14 +118,16 @@ if __name__ == '__main__':
     cb3 = plt.colorbar(plot3, ax=axs[2], ticks=ticks3)
     cb4 = plt.colorbar(plot4, ax=axs[3], ticks=ticks4)
     
-    cb2.set_label(r"Relative Error ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
-    cb4.set_label(r"Relative Error ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
+    cb1.set_label(r"$\Delta \partial_x xf(x,Q)$ ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
+    cb2.set_label(r"$\Delta\partial_Q xf(x,Q)$ ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
+    cb3.set_label(r"$\Delta \partial^2_x xf(x,Q)$ ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
+    cb4.set_label(r"$\Delta\partial^2_Q xf(x,Q)$ ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
     
     fig.supxlabel(r'$\log_{10}x$', fontsize=axes_size)
     fig.supylabel(r'$\log_{10}Q$', x=0.01, fontsize=axes_size) 
     fig.tight_layout()
     
-    fig.savefig("../outputs/pdflike/deriv_err.pdf", dpi=800, format="pdf")
+    fig.savefig("../outputs/pdflike/x_power_law/deriv_err.pdf", dpi=400, format="pdf")
     
     # fig = plt.figure(figsize=(12,6))
     # axs = fig.subplots(1,2).flatten()

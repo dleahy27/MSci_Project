@@ -43,7 +43,7 @@ if __name__ == '__main__':
     
     # imported data is 1D columns
     sizex = 153
-    sizey = 153
+    sizey = 103
     x_c = x_c.reshape((sizey,sizex))
     # x_c = x_c[:,:]
     y_c = y_c.reshape((sizey,sizex))
@@ -58,9 +58,9 @@ if __name__ == '__main__':
     # z_cspline = z_cspline[:, 2:]
     
     # calculate percentage errors
-    ratio = (z_c/z_cspline - 1)*100
-    ratio_ds = (z_c/z_cds - 1)*100
-    ratio_ds_num = (z_c/z_cds_num - 1)*100
+    ratio = (z_cspline/z_c - 1)*100
+    ratio_ds = (z_cds/z_c - 1)*100
+    ratio_ds_num = (z_cds_num/z_c - 1)*100
     
     
     # Plot data
@@ -72,58 +72,59 @@ if __name__ == '__main__':
     fig = plt.figure(figsize=(10,8))
     axs = fig.subplots(2,2).flatten()
     
-    plot1 = axs[0].pcolormesh(x_c,y_c,z_c)
+    plot1 = axs[0].pcolormesh(x_c,y_c,z_c, rasterized = True)
     axs[0].set_title(r"Analytic")
     axs[0].label_outer()
     
-    plot2 = axs[1].pcolormesh(x_c,y_c,z_cds)
+    plot2 = axs[1].pcolormesh(x_c,y_c,z_cds, rasterized=True)
     axs[1].set_title(r"Spline with analytic second derivatives")
     axs[1].label_outer()
     
-    plot3 = axs[2].pcolormesh(x_c,y_c,z_cds_num)
+    plot3 = axs[2].pcolormesh(x_c,y_c,z_cds_num, rasterized=True)
     axs[2].set_title(r"Spline with numerical second derivatives")
     axs[2].label_outer()
     
-    plot4 = axs[3].pcolormesh(x_c,y_c,z_cspline)
+    plot4 = axs[3].pcolormesh(x_c,y_c,z_cspline, rasterized=True)
     axs[3].set_title(r"Spline with zeroed second derivatives")
     axs[3].label_outer()
     
-    cb1 = plt.colorbar(plot1, ax=axs[0])
+
     cb2 = plt.colorbar(plot2, ax=axs[1])
-    cb3 = plt.colorbar(plot3, ax=axs[2])
     cb4 = plt.colorbar(plot4, ax=axs[3])
+
+    cb2.set_label(r"$xf(u,v)$", rotation=270, labelpad=20, fontsize=cbar_size)
+    cb4.set_label(r"$xf(u,v)$", rotation=270, labelpad=20, fontsize=cbar_size)
     
-    cb1.set_label(r"z(x,y)", rotation=270, labelpad=20, fontsize=cbar_size)
-    cb2.set_label(r"z(x,y)", rotation=270, labelpad=20, fontsize=cbar_size)
-    cb3.set_label(r"z(x,y)", rotation=270, labelpad=20, fontsize=cbar_size)
-    cb4.set_label(r"z(x,y)", rotation=270, labelpad=20, fontsize=cbar_size)
-    
-    fig.supxlabel(r'$\log(x)$', fontsize=axes_size)
-    fig.supylabel(r'$\log(Q)$', x=0.01, fontsize=axes_size) 
+    fig.supxlabel(r'$u$', fontsize=axes_size)
+    fig.supylabel(r'$v$', x=0.01, fontsize=axes_size) 
     fig.tight_layout()
-    fig.savefig("../outputs/pdflike/function_plots.pdf",dpi=800, format="pdf")
+    fig.savefig("../outputs/pdf/func_err/function_plots.pdf",dpi=400, format="pdf")
     
     # plot 2x2 errors with actual function at top left
     fig = plt.figure(figsize=(10,8))
     axs = fig.subplots(2,2).flatten()
     
-    plot1 = axs[0].pcolormesh(x_c,y_c,z_c)
-    axs[0].set_title(r"Analytic function", fontsize=title_size)
+    plot1 = axs[0].pcolormesh(x_c,y_c,z_c, rasterized=True)
+    #axs[0].set_title(r"Analytic function", fontsize=title_size)
+    axs[0].set_xlabel(r"(a)")
     axs[0].label_outer()
     
     norm,levels,ticks1 = dynamicColorbar(ratio)
-    plot2 = axs[1].pcolormesh(x_c,y_c,ratio, norm=norm, cmap="seismic")
-    axs[1].set_title(r"Error with second derivatives = 0", fontsize=title_size)
+    plot2 = axs[1].pcolormesh(x_c,y_c,ratio, norm=norm, cmap="seismic", rasterized=True)
+    #axs[1].set_title(r"Error with second derivatives = 0", fontsize=title_size)
+    axs[1].set_xlabel(r"(b)")
     axs[1].label_outer()
     
     norm,levels,ticks2 = dynamicColorbar(ratio_ds_num)
-    plot3 = axs[2].pcolormesh(x_c,y_c,ratio_ds, norm=norm, cmap="seismic")
-    axs[2].set_title(r"Error with analytic second derivatives", fontsize=title_size)
+    plot3 = axs[2].pcolormesh(x_c,y_c,ratio_ds, norm=norm, cmap="seismic", rasterized=True)
+    #axs[2].set_title(r"Error with analytic second derivatives", fontsize=title_size)
+    axs[2].set_xlabel(r"(c)")
     axs[2].label_outer()
     
     norm,levels,ticks3 = dynamicColorbar(ratio_ds_num)
-    plot4 = axs[3].pcolormesh(x_c,y_c,ratio_ds_num, norm=norm, cmap="seismic")
-    axs[3].set_title(r"Error with numerical second derivatives", fontsize=title_size)
+    plot4 = axs[3].pcolormesh(x_c,y_c,ratio_ds_num, norm=norm, cmap="seismic", rasterized=True)
+    #axs[3].set_title(r"Error with numerical second derivatives", fontsize=title_size)
+    axs[3].set_xlabel(r"(d)")
     axs[3].label_outer()
     
     cb1 = plt.colorbar(plot1, ax=axs[0])
@@ -131,15 +132,15 @@ if __name__ == '__main__':
     cb3 = plt.colorbar(plot3, ax=axs[2], ticks=ticks2)
     cb4 = plt.colorbar(plot4, ax=axs[3], ticks=ticks3)
     
-    cb1.set_label(r"z(x,y)", rotation=270, labelpad=20, fontsize=cbar_size)
-    cb2.set_label(r"relative error ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
-    cb3.set_label(r"relative error ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
-    cb4.set_label(r"relative error ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
+    cb1.set_label(r"$xf(u,v)$", rotation=270, labelpad=20, fontsize=cbar_size)
+    cb2.set_label(r"\Delta xf(u,v) ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
+    #cb3.set_label(r"Relative error ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
+    cb4.set_label(r"\Delta xf(u,v)", rotation=270, labelpad=20, fontsize=cbar_size)
     
-    fig.supxlabel(r'$\log(x)$', fontsize=axes_size)
-    fig.supylabel(r'$\log(Q)$', x=0.01, fontsize=axes_size) 
+    fig.supxlabel(r'$u$', fontsize=axes_size+4)
+    fig.supylabel(r'$v$', x=0.01, fontsize=axes_size+4) 
     fig.tight_layout()
-    fig.savefig("../outputs/pdflike/func_and_err_milli.pdf", dpi=400, format="pdf")
+    fig.savefig("../outputs/pdf/func_err/func_and_err.pdf", dpi=400, format="pdf")
     
     # plot percentage error for all
     # fig = plt.figure(figsize=(12,6))

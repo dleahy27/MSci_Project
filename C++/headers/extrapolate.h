@@ -3,6 +3,7 @@
 #include <vector>
 #include <cmath>
 #include <stdexcept>
+#include <limits>
 
 // struct
 struct Coeffs{
@@ -31,14 +32,22 @@ class Extrapolate{
     /// Evaluates the second derivative of the fitted power law at a new point
     double secondDerivPower(double x, const Coeffs& coeffs);
 
+    /// Evaluates the second derivative of the fitted ten power law at a new point
+    double secondDerivTenPower(double x, const Coeffs& coeffs);
+
     /// Evaluates the value of the power law model at a point
     double powerLawModel(double x, const Coeffs& coeffs);
+
+    /// Evaluates the value of the ten power law model at a point
+    double tenPowerLawModel(double x, const Coeffs& coeffs);
 
     /// Evaluates the value of the linear model at a point
     double linearModel(double x, const Coeffs& coeffs);
 
     /// Fits the power law model based off of grid points and function values
     Coeffs interpPowerLaw();
+    /// Fits the 10 power law model based off of grid points and function values
+    Coeffs interpTenPowerLaw();
     /// Fits the linear model based off of grid points and function values
     Coeffs interpLinearLaw();
 
@@ -53,7 +62,14 @@ class Extrapolate{
 
     /// Power law extrapolation beyond the grid for point x 
     void extrapolatePowerLaw(double x);
+    /// 10 Power law extrapolation beyond the grid for point x 
+    void extrapolateTenPowerLaw(double x);
     /// Linear extrapolation beyond the grid for point x 
     void extrapolateLinearLaw(double x);
+
+    /// Output the extrapolated z values (before taking the second deriv)
+    double tenPowerLawZs(double x);
+
+    double powerLawZs(double x);
 
 };
