@@ -92,6 +92,10 @@ class BicubicSpline{
     void d3Y(const std::vector<double>& Xs, const std::vector<double>& Ys, const std::vector<int>& iXs, const std::vector<int>& iYs);
 
     public:
+
+    /// Default constructor, for storage in STL containers
+    // BicubicSpline() {}
+
     /// Standard constructor
     BicubicSpline(const std::vector<double>& Xs, const std::vector<double>& Ys, const std::vector<std::vector<double>>& Zs);
 
@@ -99,11 +103,13 @@ class BicubicSpline{
     BicubicSpline(const std::vector<double>& Xs, const std::vector<double>& Ys, const std::vector<std::vector<double>>& Zs, const Derivatives& ds);
 
     /// Evaluates the bicubic spline at a singular xy point within the grid
-    double evaluateSpline( double X, double Y );
+    double evaluateSpline( double X, double Y ) const;
+
     /// Evaluates the bicubic spline at for an array of xy point within the grid
-    std::vector<std::vector<double>> evaluateSpline( const std::vector<double>& X, const std::vector<double>& Y );
+    std::vector<std::vector<double>> evaluateSpline( const std::vector<double>& X, const std::vector<double>& Y ) const;
 
     void calculateDerivs(const std::vector<double>& X, const std::vector<double>& Y);
 
-    void outputDerivs(const std::string& filename);
+    void outputDerivs(const std::string& filename) const;
+
 };

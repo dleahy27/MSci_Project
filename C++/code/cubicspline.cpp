@@ -1,4 +1,5 @@
 #include "../headers/cubicspline.h"
+#include <algorithm>
 
 // fast square function
 inline double square(double x){return x*x;}

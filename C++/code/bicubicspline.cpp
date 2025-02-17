@@ -221,7 +221,7 @@ void BicubicSpline::CalculateSpline(){
     }
 }
 
-double BicubicSpline::evaluateSpline( double X, double Y ){
+double BicubicSpline::evaluateSpline( double X, double Y ) const {
     /*
     Returns the value(s) of the interpolated function at x, y.
 
@@ -272,7 +272,7 @@ double BicubicSpline::evaluateSpline( double X, double Y ){
     return splines;
 }
 
-std::vector<std::vector<double>> BicubicSpline::evaluateSpline( const std::vector<double>& x, const std::vector<double>& y ){
+std::vector<std::vector<double>> BicubicSpline::evaluateSpline( const std::vector<double>& x, const std::vector<double>& y ) const {
     /*
     Returns the value(s) of the interpolated function at x, y.
 
@@ -360,7 +360,7 @@ void BicubicSpline::calculateDerivs(const std::vector<double>& X, const std::vec
         
     if (Y[Y.size()-1] >= ys[ys.size()-1] ){idys[idys.size()-1] -= 1;}
 
-    // Calculate each derivatvive
+    // Calculate each derivative
     d1X(dxs,dys,idxs,idys);
     d2X(dxs,dys,idxs,idys);
     d3X(dxs,dys,idxs,idys);
@@ -396,7 +396,7 @@ void BicubicSpline::initDerivs(const std::vector<double>& X, const std::vector<d
         }
 }
 
-void BicubicSpline::outputDerivs(const std::string& filename){
+void BicubicSpline::outputDerivs(const std::string& filename) const {
     std::ofstream myfile;
     myfile.open("../outputs/"+filename);
     myfile << "x,y,d1x,d1y,d2x,d2y,d3x,d3y"<<std::endl;
