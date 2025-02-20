@@ -20,8 +20,9 @@ inline double cube(double x){return x*x*x;}
 // constructor without edge derivatives -- set them all to 0
 BicubicSpline::BicubicSpline(const std::vector<double>& Xs, const std::vector<double>& Ys, const std::vector<std::vector<double>>& Zs) : xs(Xs), ys(Ys), zs(Zs), m(Xs.size()), n(Ys.size()), d2x2s_left(n,0), d2x2s_right(n,0), d2y2s_bottom(m,0), d2y2s_top(m,0), d4x2y2s_corners(4,0), S(n-1, std::vector<Vector16>(m-1)){
     // check if list of function values has the appropriate length
-    if ( zs.size() != n && zs[0].size() != m ){
-        throw std::length_error( "Array of function values must have shape (m, n), where m and n are the grid dimensions along x and y, respectively!" );
+    if ( zs.size() != n || zs[0].size() != m ){
+        std::cerr << "@ (n,m) = (" << n << "," << m << ") exp vs (" << zs.size() << "," << zs[0].size() << ") given" << std::endl;
+        throw std::length_error( "Array of function values must have shape (n, m), where m and n are the grid dimensions along x and y, respectively!" );
     }
     // other checks / initialisations
     // calculate spline
