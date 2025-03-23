@@ -40,9 +40,11 @@ if __name__ == '__main__':
     # read in data
     an_d1x, an_d1y, an_d2x, an_d2y = np.loadtxt("/mnt/c/Users/dillo/Desktop/work/Uni/Year_5/Project/Code/MSci_Project/C++/outputs/analytical_ds_pdf.csv", dtype='float', delimiter=',', unpack=True, skiprows=1, usecols=[2,3,4,5])
     x,y,num_d1x, num_d1y, num_d2x, num_d2y, num_d3x, num_d3y = np.loadtxt("/mnt/c/Users/dillo/Desktop/work/Uni/Year_5/Project/Code/MSci_Project/C++/outputs/num_ds_pdf.csv", dtype='float', delimiter=',', unpack=True, skiprows=1)
+    gx,gy,g = np.loadtxt("/mnt/c/Users/dillo/Desktop/work/Uni/Year_5/Project/Code/MSci_Project/C++/outputs/derivtest_grid.csv", dtype='float64', delimiter=',', unpack=True, skiprows=1)
     # x,y,an_num_d1x, an_num_d1y, an_num_d2x, an_num_d2y, an_num_d3x, an_num_d3y = np.loadtxt("/mnt/c/Users/dillo/Desktop/work/Uni/Year_5/Project/Code/MSci_Project/C++/outputs/an_ds_pdf.csv", dtype='float', delimiter=',', unpack=True, skiprows=1)
     # x,y,zero_d1x, zero_d1y, zero_d2x, zero_d2y, zero_d3x, zero_d3y = np.loadtxt("/mnt/c/Users/dillo/Desktop/work/Uni/Year_5/Project/Code/MSci_Project/C++/outputs/zero_ds_pdf.csv", dtype='float', delimiter=',', unpack=True, skiprows=1)
     
+    gxx, gyy = np.meshgrid(gx,gy)
     
     # imported data is 1D columns
     sizex = 153
@@ -81,9 +83,11 @@ if __name__ == '__main__':
     # an_ratio4 = (an_num_d2y/an_d2y - 1)*100
     
     # Plot data
-    title_size = 14
-    cbar_size = 14
-    axes_size = 14
+    title_size = 18
+    cbar_size = 18
+    axes_size = 18
+    msize = 1
+    alph = 0.09
 
     # plot 2x2 errors with actual function at top left
     fig = plt.figure(figsize=(8,8))
@@ -91,43 +95,47 @@ if __name__ == '__main__':
     
     norm,levels,ticks1 = dynamicColorbar(ratio1) # Each has seprate colorbar as they model different things
     plot1 = axs[0].pcolormesh(x,y,ratio1, norm=norm, cmap="seismic", rasterized=True)
+    axs[0].scatter(gxx, gyy, color="black", s=msize, alpha=alph, rasterized = True)
     #axs[0].set_title(r"$\Delta \partial_x xf(x,Q)$", fontsize=title_size)
-    axs[0].set_xlabel(r"(a)")
-    axs[0].label_outer()
+    axs[0].set_xlabel(r"(a)", fontsize=cbar_size)
+    #axs[0].label_outer()
     
     norm,levels,ticks2 = dynamicColorbar(ratio2) # Each has seprate colorbar as they model different things
     plot2 = axs[1].pcolormesh(x,y,ratio2, norm=norm, cmap="seismic", rasterized=True)
+    axs[1].scatter(gxx, gyy, color="black", s=msize, alpha=alph, rasterized = True)
     #axs[1].set_title(r"$\Delta\partial_Q xf(x,Q)$", fontsize=title_size)
-    axs[1].set_xlabel(r"(b)")
-    axs[1].label_outer()
+    axs[1].set_xlabel(r"(b)", fontsize=cbar_size)
+    #axs[1].label_outer()
     
     norm,levels,ticks3 = dynamicColorbar(ratio3) # Each has seprate colorbar as they model different things
     plot3 = axs[2].pcolormesh(x,y,ratio3, norm=norm, cmap="seismic", rasterized=True)
+    axs[2].scatter(gxx, gyy, color="black", s=msize, alpha=alph, rasterized = True)
     #axs[2].set_title(r"$\Delta \partial^2_x xf(x,Q)$", fontsize=title_size)
-    axs[2].set_xlabel(r"(c)")
-    axs[2].label_outer()
+    axs[2].set_xlabel(r"(c)", fontsize=cbar_size)
+    #axs[2].label_outer()
     
     norm,levels,ticks4 = dynamicColorbar(ratio4) # Each has seprate colorbar as they model different things
     plot4 = axs[3].pcolormesh(x,y,ratio4, norm=norm, cmap="seismic", rasterized=True)
+    axs[3].scatter(gxx, gyy, color="black", s=msize, alpha=alph, rasterized = True)
     #axs[3].set_title(r"$\Delta\partial^2_Q xf(x,Q)$", fontsize=title_size)
-    axs[3].set_xlabel(r"(d)")
-    axs[3].label_outer()
+    axs[3].set_xlabel(r"(d)", fontsize=cbar_size)
+    #axs[3].label_outer()
     
     cb1 = plt.colorbar(plot1, ax=axs[0], ticks=ticks1)
     cb2 = plt.colorbar(plot2, ax=axs[1], ticks=ticks2)
     cb3 = plt.colorbar(plot3, ax=axs[2], ticks=ticks3)
     cb4 = plt.colorbar(plot4, ax=axs[3], ticks=ticks4)
     
-    cb1.set_label(r"$\Delta \partial_x xf(x,Q)$ ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
-    cb2.set_label(r"$\Delta\partial_Q xf(x,Q)$ ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
-    cb3.set_label(r"$\Delta \partial^2_x xf(x,Q)$ ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
-    cb4.set_label(r"$\Delta\partial^2_Q xf(x,Q)$ ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
+    cb1.set_label(r"$\Delta \partial_x xf(x,Q^2)$ ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
+    cb2.set_label(r"$\Delta\partial_{Q^2} xf(x,Q^2)$ ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
+    cb3.set_label(r"$\Delta \partial^2_x xf(x,Q^2)$ ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
+    cb4.set_label(r"$\Delta\partial^2_{Q^2} xf(x,Q^2)$ ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
     
-    fig.supxlabel(r'$\log_{10}x$', fontsize=axes_size)
-    fig.supylabel(r'$\log_{10}Q$', x=0.01, fontsize=axes_size) 
+    fig.supxlabel(r'$\log_{10}x$', fontsize=axes_size+2)
+    fig.supylabel(r'$\log_{10}Q^2$', x=0.01, fontsize=axes_size+2) 
     fig.tight_layout()
     
-    fig.savefig("../outputs/pdflike/x_power_law/deriv_err.pdf", dpi=400, format="pdf")
+    fig.savefig("../outputs/pdflike/deriv_err.pdf", dpi=400, format="pdf")
     
     # fig = plt.figure(figsize=(12,6))
     # axs = fig.subplots(1,2).flatten()

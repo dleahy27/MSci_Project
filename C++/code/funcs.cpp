@@ -463,9 +463,9 @@ void funcs::outputPdfBoundaryDerivatives( const std::vector<double>& x, const st
     myfile3.open("../outputs/an_bound_corners.csv");
     myfile3 << "x,y,d4d2xd2y"<<std::endl;
     myfile3<<x[0]<<","<<y[0]<<","<<derivs.d4x2y2s_corners[0]<<std::endl;
-    myfile3<<x[m]<<","<<y[0]<<","<<derivs.d4x2y2s_corners[1]<<std::endl;
-    myfile3<<x[m]<<","<<y[n]<<","<<derivs.d4x2y2s_corners[2]<<std::endl;
-    myfile3<<x[0]<<","<<y[n]<<","<<derivs.d4x2y2s_corners[3]<<std::endl;
+    myfile3<<x[m-1]<<","<<y[0]<<","<<derivs.d4x2y2s_corners[1]<<std::endl;
+    myfile3<<x[m-1]<<","<<y[n-1]<<","<<derivs.d4x2y2s_corners[2]<<std::endl;
+    myfile3<<x[0]<<","<<y[n-1]<<","<<derivs.d4x2y2s_corners[3]<<std::endl;
     myfile3.close();
 }
 

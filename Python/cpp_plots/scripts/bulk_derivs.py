@@ -43,14 +43,14 @@ if __name__ == '__main__':
     for i in range(10):
         if i == 0 or i == 9:
             continue
-        plot = axs1[i-1].plot(x, an_d2y.T[vals[i]][:], marker="x", linestyle='None', label=r"Analytic")
-        axs1[i-1].plot(x, num_d2y.T[vals[i]][:],  marker='.', linestyle='None', label=r"Extrapolation")
+        plot = axs1[i-1].plot(x, an_d2y.T[vals[i]][:], marker="x",  label=r"Analytic")
+        axs1[i-1].plot(x, num_d2y.T[vals[i]][:],  marker='.',  label=r"Extrapolation")
         axs1[i-1].set_title(r"$\log_{{10}}Q={0:.2}$".format(y[vals[i]]),fontsize=title_size)
         #axs1[i-1].set_ylabel(r"$\partial^2_y xf\(x,Q\)$",fontsize=axes_size)
         #axs1[i-1].set_xlabel(r"$\log_{10}x$",fontsize=axes_size)
         
-        plot = axs2[i-1].plot(x, an_d1y.T[vals[i]][:], marker="x", linestyle='None', label=r"Analytic")
-        axs2[i-1].plot(x, num_d1y.T[vals[i]][:],  marker='.', linestyle='None', label=r"Extrapolation")
+        plot = axs2[i-1].plot(x, an_d1y.T[vals[i]][:], marker="x",  label=r"Analytic")
+        axs2[i-1].plot(x, num_d1y.T[vals[i]][:],  marker='.',  label=r"Extrapolation")
         axs2[i-1].set_title(r"$\log_{{10}}Q={0:.2}$".format(y[vals[i]]),fontsize=title_size)
         #axs2[i-1].set_ylabel(r"$\partial_y xf\(x,Q\)$",fontsize=axes_size)
         #axs2[i-1].set_xlabel(r"$\log_{10}x$",fontsize=axes_size)
@@ -85,14 +85,15 @@ if __name__ == '__main__':
         if i == 0 or i == 9:
             continue
         
-        plot = axs1[i-1].plot(y[:], an_d2x[vals[i]][:], marker="x", linestyle='None', label=r"Analytic")
-        axs1[i-1].plot(y[:], num_d2x[vals[i]][:],  marker='.', linestyle='None', label=r"Extrapolation")
+        mask = (y>=10) # & (y<=2)
+        plot = axs1[i-1].plot(y[mask], an_d2x[vals[i]][mask], marker="x",  label=r"Analytic")
+        axs1[i-1].plot(y[mask], num_d2x[vals[i]][mask],  marker='.',  label=r"Extrapolation")
         axs1[i-1].set_title(r"$\log_{{10}}x={0:.2}$".format(x[vals[i]]),fontsize=title_size)
         # axs1[i-1].set_ylabel(r"$\partial^2_x xf\(x,Q\)$",fontsize=axes_size)
         # axs1[i-1].set_xlabel(r"$\log_{10}Q$",fontsize=axes_size)
         
-        plot = axs2[i-1].plot(y[:], an_d1x[vals[i]][:], marker="x", linestyle='None', label=r"Analytic")
-        axs2[i-1].plot(y[:], num_d1x[vals[i]][:],  marker='.', linestyle='None', label=r"Extrapolation")
+        plot = axs2[i-1].plot(y[:], an_d1x[vals[i]][:], marker="x",  label=r"Analytic")
+        axs2[i-1].plot(y[:], num_d1x[vals[i]][:],  marker='.',  label=r"Extrapolation")
         axs2[i-1].set_title(r"$\log_{{10}}x={0:.2}$".format(x[vals[i]]),fontsize=title_size)
         # axs2[i-1].set_ylabel(r"$\partial_x xf\(x,Q\)$",fontsize=axes_size)
         # axs2[i-1].set_xlabel(r"$\log_{10}Q$",fontsize=axes_size)

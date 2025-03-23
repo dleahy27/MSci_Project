@@ -45,7 +45,7 @@ if __name__ == '__main__':
     
     title_sze = 20
     lbl_sze = 20
-    legend_sze = 13
+    legend_sze = 20
     
     Q2_plot = np.logspace(1, 8, num=8, base=10 )
     
@@ -57,19 +57,26 @@ if __name__ == '__main__':
         
         j = 0
         for ax in axs.flat:
-            ax.plot(np.log(x[Q2 == Q2_plot[j]]), fx[Q2 == Q2_plot[j]], label=pname)
-            ax.set_title(r"$Q^2={:.1E}\left(\mathrm{{eV}}\right)^2$".format(Q2_plot[j]), size=title_sze)
-            ax.set_ylim(0,1)
-            ax.set_xlim(-8,0)
-            ax.label_outer()
-            if j == 0:
-                ax.legend(fontsize=legend_sze, loc='upper left')
-            j+=1
-    
-    fig.supxlabel(r'$\log$(x)', fontsize=lbl_sze)
-    fig.supylabel(r'$xf(x;Q^2)$', x=0.01, fontsize=lbl_sze) 
-    fig.tight_layout()
-    fig.savefig("intro_pdfs.pdf", format="pdf")
+            if j ==0:
+                ax.plot(np.log(x[Q2 == Q2_plot[j]]), fx[Q2 == Q2_plot[j]], label=pname)
+                ax.set_title(r"$Q^2=10\left(\mathrm{{eV}}\right)^2$", size=title_sze+2)
+                ax.set_ylim(0,1)
+                ax.set_xlim(-8,0)
+                ax.label_outer()
+                j += 1
+            else:
+                ax.plot(np.log(x[Q2 == Q2_plot[j]]), fx[Q2 == Q2_plot[j]])
+                ax.set_title(r"$Q^2=10^{:}\left(\mathrm{{eV}}\right)^2$".format(int(np.log10(Q2_plot[j]))), size=title_sze+2)
+                ax.set_ylim(0,1)
+                ax.set_xlim(-8,0)
+                ax.label_outer()
+                j += 1
+            
+    fig.legend(fontsize=legend_sze, loc='outside right center')
+    fig.supxlabel(r'$\log_{10}(x)$', fontsize=lbl_sze+6)
+    fig.supylabel(r'$xf(x;Q^2)$', x=0.08, fontsize=lbl_sze+6) 
+    #fig.tight_layout()
+    fig.savefig("intro_pdfs.pdf", format="pdf", bbox_inches='tight', pad_inches=0)
         
         
         

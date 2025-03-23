@@ -40,10 +40,12 @@ def dynamicColorbar(z):
 if __name__ == '__main__':
     # read in data
     x_c,y_c,z_c,z_cds,z_cds_num,z_cspline = np.loadtxt("/mnt/c/Users/dillo/Desktop/work/Uni/Year_5/Project/Code/MSci_Project/C++/outputs/pdfLike_bicubic.csv", dtype='float64', delimiter=',', unpack=True, skiprows=1)
+    gx,gy,g = np.loadtxt("/mnt/c/Users/dillo/Desktop/work/Uni/Year_5/Project/Code/MSci_Project/C++/outputs/pdflike_grid.csv", dtype='float64', delimiter=',', unpack=True, skiprows=1)
     
+    gxx, gyy = np.meshgrid(gx,gy)
     # imported data is 1D columns
     sizex = 153
-    sizey = 103
+    sizey = 153
     x_c = x_c.reshape((sizey,sizex))
     # x_c = x_c[:,:]
     y_c = y_c.reshape((sizey,sizex))
@@ -64,9 +66,11 @@ if __name__ == '__main__':
     
     
     # Plot data
-    title_size = 14
-    cbar_size = 14
-    axes_size = 14
+    title_size = 16
+    cbar_size = 16
+    axes_size = 16
+    msize = 2
+    alph = 0.5
 
     # plot the grid data for each case
     fig = plt.figure(figsize=(10,8))
@@ -98,49 +102,49 @@ if __name__ == '__main__':
     fig.supxlabel(r'$u$', fontsize=axes_size)
     fig.supylabel(r'$v$', x=0.01, fontsize=axes_size) 
     fig.tight_layout()
-    fig.savefig("../outputs/pdf/func_err/function_plots.pdf",dpi=400, format="pdf")
-    
+    fig.savefig("../outputs/pdflike/func_err/function_plots.pdf",dpi=400, format="pdf")
+
     # plot 2x2 errors with actual function at top left
-    fig = plt.figure(figsize=(10,8))
+    fig = plt.figure(figsize=(8,8))
     axs = fig.subplots(2,2).flatten()
     
     plot1 = axs[0].pcolormesh(x_c,y_c,z_c, rasterized=True)
     #axs[0].set_title(r"Analytic function", fontsize=title_size)
-    axs[0].set_xlabel(r"(a)")
-    axs[0].label_outer()
+    axs[0].set_xlabel(r"(a) Test function", fontsize=axes_size)
+    axs[0].scatter(gxx, gyy, color="black", s=msize, alpha=alph, rasterized=True)
     
     norm,levels,ticks1 = dynamicColorbar(ratio)
     plot2 = axs[1].pcolormesh(x_c,y_c,ratio, norm=norm, cmap="seismic", rasterized=True)
     #axs[1].set_title(r"Error with second derivatives = 0", fontsize=title_size)
-    axs[1].set_xlabel(r"(b)")
-    axs[1].label_outer()
+    axs[1].set_xlabel(r"(b) Natural Boundary", fontsize=axes_size)
+    axs[1].scatter(gxx, gyy, color="black", s=msize, alpha=alph, rasterized=True)
     
     norm,levels,ticks2 = dynamicColorbar(ratio_ds_num)
     plot3 = axs[2].pcolormesh(x_c,y_c,ratio_ds, norm=norm, cmap="seismic", rasterized=True)
     #axs[2].set_title(r"Error with analytic second derivatives", fontsize=title_size)
-    axs[2].set_xlabel(r"(c)")
-    axs[2].label_outer()
+    axs[2].set_xlabel(r"(c) Numerical Boundary", fontsize=axes_size)
+    axs[2].scatter(gxx, gyy, color="black", s=msize, alpha=alph, rasterized=True)
     
     norm,levels,ticks3 = dynamicColorbar(ratio_ds_num)
     plot4 = axs[3].pcolormesh(x_c,y_c,ratio_ds_num, norm=norm, cmap="seismic", rasterized=True)
     #axs[3].set_title(r"Error with numerical second derivatives", fontsize=title_size)
-    axs[3].set_xlabel(r"(d)")
-    axs[3].label_outer()
+    axs[3].set_xlabel(r"(d) Analytic Boundary", fontsize=axes_size)
+    axs[3].scatter(gxx, gyy, color="black", s=msize, alpha=alph, rasterized=True)
     
     cb1 = plt.colorbar(plot1, ax=axs[0])
     cb2 = plt.colorbar(plot2, ax=axs[1], ticks=ticks1)
     cb3 = plt.colorbar(plot3, ax=axs[2], ticks=ticks2)
     cb4 = plt.colorbar(plot4, ax=axs[3], ticks=ticks3)
     
-    cb1.set_label(r"$xf(u,v)$", rotation=270, labelpad=20, fontsize=cbar_size)
-    cb2.set_label(r"\Delta xf(u,v) ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
+    cb1.set_label(r"$xf(x,Q^2)$", rotation=270, labelpad=20, fontsize=cbar_size)
+    cb2.set_label(r"$\Delta xf(x,Q^2) (\%)$", rotation=270, labelpad=20, fontsize=cbar_size)
     #cb3.set_label(r"Relative error ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
-    cb4.set_label(r"\Delta xf(u,v)", rotation=270, labelpad=20, fontsize=cbar_size)
+    cb4.set_label(r"$\Delta xf(x,Q^2)$", rotation=270, labelpad=20, fontsize=cbar_size)
     
-    fig.supxlabel(r'$u$', fontsize=axes_size+4)
-    fig.supylabel(r'$v$', x=0.01, fontsize=axes_size+4) 
+    fig.supxlabel(r'$\log_{10}x$', fontsize=axes_size+4)
+    fig.supylabel(r'$\log_{10}Q^2$', x=0.01, fontsize=axes_size+4) 
     fig.tight_layout()
-    fig.savefig("../outputs/pdf/func_err/func_and_err.pdf", dpi=400, format="pdf")
+    fig.savefig("../outputs/pdflike/func_err/func_and_err.pdf", dpi=400, format="pdf")
     
     # plot percentage error for all
     # fig = plt.figure(figsize=(12,6))

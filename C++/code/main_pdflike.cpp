@@ -26,6 +26,7 @@ int main(int argc, char* argv[]){
     
     // scalar field values
     std::vector<std::vector<double>> z = pdfLike(x,y);
+    outputZs(x,y,z, "pdflike_grid.csv");
     // analytic derivatives
     Derivatives ds = pdfBoundaryDerivatives(x,y);
 
@@ -46,7 +47,7 @@ int main(int argc, char* argv[]){
     int x_n = 153;
     double max_x = -0.0001;
     double min_x = -5;
-    double max_y = 8;
+    double max_y = 12;
     double min_y = 1;
 
     std::vector<double> xs_t, ys_t;

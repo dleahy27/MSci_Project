@@ -8,10 +8,10 @@ plt.rcParams["text.usetex"] = True
 # NEED TO WRITE THIS
 if __name__ == '__main__':
     # Plot params
-    title_size = 14
-    cbar_size = 14
-    axes_size = 14
-    legend_size = 14
+    title_size = 18
+    cbar_size = 18
+    axes_size = 18
+    legend_size = 18
     
     sizex = 51
     sizey = 51
@@ -30,37 +30,51 @@ if __name__ == '__main__':
     z = z.reshape(sizex,sizey)
     
     # Boundaries
-    fig = plt.figure(figsize=(8,8))
-    axs = fig.subplots(2,2).flatten()
+    fig = plt.figure(figsize=(8,4))
+    axs = fig.subplots(1,2).flatten()
 
-    plot = axs[0].plot(x, an_d2y_top, marker="x", linestyle='None', label=r"Analytic")
+    plot = axs[0].plot(x, an_d2y_top, marker=".", linestyle='None', label=r"Analytic")
     axs[0].plot(x, d2y_top,  marker='.', linestyle='None', label=r"Extrapolation")
-    axs[0].set_title(r"Top boundary",fontsize=title_size)
-    axs[0].set_ylabel(r"$\partial^2_v xf(u;v)$",fontsize=axes_size)
+    #axs[0].set_title(r"Top boundary",fontsize=title_size)
+    #axs[0].set_ylabel(r"$\partial^2_v xf(u;v)$",fontsize=axes_size)
+    axs[0].set_xlabel(r"(a) Top Boundary",fontsize=axes_size)
     axs[0].label_outer()
-    axs[0].legend(fontsize = legend_size, loc="upper left")
+    axs[0].legend(fontsize = legend_size-4, loc="upper left")
     
-    plot = axs[2].plot(x, an_d2y_bottom, marker="x", linestyle='None', label=r"nalytic")
-    axs[2].plot(x, d2y_bottom,  marker='.', linestyle='None', label=r"numerical extrapolation")
-    axs[2].set_title(r"Bottom boundary",fontsize=title_size)
-    axs[2].set_ylabel(r"$\partial^2_v xf(u;v)$",fontsize=axes_size)
-    axs[2].set_xlabel(r"$u$",fontsize=axes_size)
+    plot = axs[1].plot(x, an_d2y_bottom, marker=".", linestyle='None')
+    axs[1].plot(x, d2y_bottom,  marker='.', linestyle='None')
+    #axs[1].set_title(r"Bottom boundary",fontsize=title_size)
+    #axs[1].set_ylabel(r"$\partial^2_v xf(u;v)$",fontsize=axes_size)
+    axs[1].set_xlabel(r"(b) Bottom Boundary",fontsize=axes_size)
     
-    plot = axs[1].plot(y, an_d2x_right, marker="x", linestyle='None', label=r"analytic")
-    axs[1].plot(y, d2x_right,  marker='.', linestyle='None', label=r"numerical extrapolation")
-    axs[1].set_title(r"Right boundary",fontsize=title_size)
-    axs[1].set_ylabel(r"$\partial^2_u xf(v;u)$",fontsize=axes_size)
-    axs[1].tick_params(axis='x', which='both', bottom=True, top=False, labelbottom=False)
-    
-    
-    plot = axs[3].plot(y, an_d2x_left, marker="x", linestyle='None', label=r"analytic")
-    axs[3].plot(y, d2x_left,  marker='.', linestyle='None', label=r"numerical extrapolation")
-    axs[3].set_title(r"Left boundary",fontsize=title_size)
-    axs[3].set_ylabel(r"$\partial^2_u xf(v;u)$",fontsize=axes_size)
-    axs[3].set_xlabel(r"$v$",fontsize=axes_size)
-    
+    fig.supylabel(r"$\partial^2_v xf(u;v)$",fontsize=axes_size+2)
+    fig.supxlabel(r"$u$",fontsize=axes_size+4)
     fig.tight_layout()
-    fig.savefig("../outputs/pdflike/x_power_law/boundary_extrapolation.pdf", format="pdf")
+    fig.savefig("../outputs/pdflike/x_power_law/boundary_tb_extrapolation.pdf", format="pdf")
+    
+    
+    # Boundaries
+    fig = plt.figure(figsize=(8,4))
+    axs = fig.subplots(1,2).flatten()
+    
+    plot = axs[1].plot(y, an_d2x_right, marker=".", linestyle='None')
+    axs[1].plot(y, d2x_right,  marker='.', linestyle='None')
+    #axs[0].set_title(r"Right boundary",fontsize=title_size)
+    #axs[0].set_ylabel(r"$\partial^2_u xf(v;u)$",fontsize=axes_size)
+    axs[1].set_xlabel(r"(d) Right Boundary",fontsize=axes_size)
+    
+    
+    plot = axs[0].plot(y, an_d2x_left, marker=".", linestyle='None', label=r"Analytic")
+    axs[0].plot(y, d2x_left,  marker='.', linestyle='None', label=r"Extrapolation")
+    #axs[1].set_title(r"Left boundary",fontsize=title_size)
+    #axs[1].set_ylabel(r"$\partial^2_u xf(v;u)$",fontsize=axes_size)
+    axs[0].set_xlabel(r"(c) Left Boundary",fontsize=axes_size)
+    #axs[0].legend(fontsize = legend_size-4, loc="upper left")
+    
+    fig.supylabel(r"$\partial^2_u xf(v;u)$",fontsize=axes_size+2)
+    fig.supxlabel(r"$v$",fontsize=axes_size+4)
+    fig.tight_layout()
+    fig.savefig("../outputs/pdflike/x_power_law/boundary_lr_extrapolation.pdf", format="pdf")
 
     # Boundaries
     fig = plt.figure(figsize=(12,6))

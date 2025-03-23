@@ -18,7 +18,7 @@ int main(int argc, char* argv[]){
     int y_num = 51;
     double x_max = -0.001;
     double x_min = -5;
-    double y_max = 8;
+    double y_max = 12;
     double y_min = 1;
     std::vector<double> x,y;
 
@@ -52,7 +52,7 @@ int main(int argc, char* argv[]){
     int x_n = 153;
     double max_x = -0.001;
     double min_x = -5;
-    double max_y = 8;
+    double max_y = 12;
     double min_y = 1;
 
     std::vector<double> xs_t, ys_t;

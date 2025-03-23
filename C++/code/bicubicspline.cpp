@@ -18,10 +18,9 @@ inline double square(double x){return x*x;}
 inline double cube(double x){return x*x*x;}
 
 // constructor without edge derivatives -- set them all to 0
-BicubicSpline::BicubicSpline(const std::vector<double>& Xs, const std::vector<double>& Ys, const std::vector<std::vector<double>>& Zs) : xs(Xs), ys(Ys), zs(Zs), m(Xs.size()), n(Ys.size()), d2x2s_left(n,0), d2x2s_right(n,0), d2y2s_bottom(m,0), d2y2s_top(m,0), d4x2y2s_corners(4,0), S(n-1, std::vector<Vector16>(m-1)){
+BicubicSpline::BicubicSpline(const std::vector<double>& Xs, const std::vector<double>& Ys, const std::vector<std::vector<double>>& Zs) : xs(Xs), ys(Ys), zs(Zs), m(Xs.size()), n(Ys.size()), d2x2s_left(n,0), d2x2s_right(n,0), d2y2s_bottom(m,0), d2y2s_top(m,0), d4x2y2s_corners(4,0), S((n-1)*(m-1)*16){
     // check if list of function values has the appropriate length
     if ( zs.size() != n || zs[0].size() != m ){
-        std::cerr << "@ (n,m) = (" << n << "," << m << ") exp vs (" << zs.size() << "," << zs[0].size() << ") given" << std::endl;
         throw std::length_error( "Array of function values must have shape (n, m), where m and n are the grid dimensions along x and y, respectively!" );
     }
     // other checks / initialisations
@@ -30,9 +29,9 @@ BicubicSpline::BicubicSpline(const std::vector<double>& Xs, const std::vector<do
 }
 
 // constructor with edge derivatives
-BicubicSpline::BicubicSpline(const std::vector<double>& Xs, const std::vector<double>& Ys, const std::vector<std::vector<double>>& Zs, const Derivatives& ds) : xs(Xs), ys(Ys), zs(Zs), m(Xs.size()), n(Ys.size()), S(n-1, std::vector<Vector16>(m-1)){
+BicubicSpline::BicubicSpline(const std::vector<double>& Xs, const std::vector<double>& Ys, const std::vector<std::vector<double>>& Zs, const Derivatives& ds) : xs(Xs), ys(Ys), zs(Zs), m(Xs.size()), n(Ys.size()), S((n-1)*(m-1)*16){
     // check if list of function values has the appropriate length
-    if ( zs.size() != n && zs[0].size() != m ){
+    if ( zs.size() != n || zs[0].size() != m ){
         throw std::length_error( "Array of function values must have shape (m, n), where m and n are the grid dimensions along x and y, respectively!" );
     }
     // other checks / initialisations
@@ -217,7 +216,10 @@ void BicubicSpline::CalculateSpline(){
             // calculate the coefficient array for this iteration (grid cell)
             // meaning: S[j][i] = A^-1 * Z
             // S[j][i] = linalg::MatMul(A_inv, Z);
-            S[j][i] = A.fullPivLu().solve(Z);
+            Vector16 temp = A.completeOrthogonalDecomposition().pseudoInverse()*Z;
+            for (size_t k = 0; k<16; ++k){
+                S[j*(m-1)*16 + i*16 + k] = temp[k];
+            }    
         }
     }
 }
@@ -235,7 +237,6 @@ double BicubicSpline::evaluateSpline( double X, double Y ) const {
     */
     double x = X;
     double y = Y;
-
     // initialise array storing function values
     double splines, result;
 
@@ -263,14 +264,30 @@ double BicubicSpline::evaluateSpline( double X, double Y ) const {
     result = 0;
     for (int k=0; k<4; k++){
         for (int l=0; l<4; l++){
-            result += S[iy][ix][k + 4*l]*power(x,k)*power(y,l);
+            result += S[iy*(m-1)*16 + ix*16 + 4*l + k]*power(x,k)*power(y,l);
         }
     }
     
     // evaluate spline at (j, i)-th coordinates and store in array
     splines = result;
-    
     return splines;
+}
+
+double BicubicSpline::evaluateSpline( double x, double y, size_t ix, size_t iy ) const {
+    // initialise array storing function values
+    const double x2 = x*x;
+    const double x3 = x2*x;
+    const double y2 = y*y;
+    const double y3 = y2*y;
+    const uint irow_col = (iy*(m - 1)+ ix)*16;
+
+
+    const double result = S[irow_col] + S[irow_col + 4] * y + S[irow_col + 8] * y2 + S[irow_col + 12] * y3 
+           + S[irow_col + 1] * x + S[irow_col + 5] * x * y + S[irow_col + 9] * x * y2 + S[irow_col + 13] * x * y3 
+           + S[irow_col + 2] * x2 + S[irow_col + 6] * x2 * y + S[irow_col + 10] * x2 * y2 + S[irow_col + 14] * x2 * y3 
+           + S[irow_col + 3] * x3 + S[irow_col + 7] * x3 * y + S[irow_col + 11] * x3 * y2 + S[irow_col + 15] * x3 * y3;
+    
+    return result;
 }
 
 std::vector<std::vector<double>> BicubicSpline::evaluateSpline( const std::vector<double>& x, const std::vector<double>& y ) const {
@@ -285,7 +302,6 @@ std::vector<std::vector<double>> BicubicSpline::evaluateSpline( const std::vecto
                     value or an array of inputs.
     */
     int m, n, iy, ix;
-
     double y_val, x_val, result;
 
     n = y.size();
@@ -332,7 +348,7 @@ std::vector<std::vector<double>> BicubicSpline::evaluateSpline( const std::vecto
             result = 0;
             for (int k=0; k<4; k++){
                 for (int l=0; l<4; l++){
-                    result += S[iy][ix][k + 4*l]*power(x_val,k)*power(y_val,l);
+                    result += S[iy*(BicubicSpline::m - 1)*16 + ix*16 + 4*l + k]*power(x_val,k)*power(y_val,l);
                 }
             }
             // evaluate spline at (j, i)-th coordinates and store in array
@@ -368,6 +384,26 @@ void BicubicSpline::calculateDerivs(const std::vector<double>& X, const std::vec
     d1Y(dxs,dys,idxs,idys);
     d2Y(dxs,dys,idxs,idys);
     d3Y(dxs,dys,idxs,idys);
+}
+
+std::tuple<double,double,double,double> BicubicSpline::evaluateDerivs(double dx, double dy, size_t idx, size_t idy) const{
+    double d1x,d1y,d2x,d2y;
+    // Calculate each derivative
+    d1x = d1X(dx,dy,idx,idy);
+    d2x = d2X(dx,dy,idx,idy);
+    d1y = d1Y(dx,dy,idx,idy);
+    d2y = d2Y(dx,dy,idx,idy);
+    return  std::make_tuple(d1x, d1y, d2x, d2y);
+}
+
+std::tuple<double,double,double,double> BicubicSpline::evaluateLogDerivs(double dx, double dy, size_t idx, size_t idy) const{
+    double d1u,d1v,d2u,d2v;
+    // Calculate each derivative
+    d1u = d1U(dx,dy,idx,idy);
+    d2u = d2U(dx,dy,idx,idy);
+    d1v = d1V(dx,dy,idx,idy);
+    d2v = d2V(dx,dy,idx,idy);
+    return  std::make_tuple(d1u, d1v, d2u, d2v);
 }
 
 void BicubicSpline::initDerivs(const std::vector<double>& X, const std::vector<double>& Y){
@@ -425,7 +461,7 @@ void BicubicSpline::d1X(const std::vector<double>& Xs, const std::vector<double>
             result = 0;
             for (int k=0; k<4; k++){
                 for (int l=0; l<4; l++){
-                    result += k*S[iy][ix][k + 4*l]*power(x,k-1)*power(y,l);
+                    result += k*S[iy*(BicubicSpline::m-1)*16 + ix*16 + 4*l + k]*power(x,k-1)*power(y,l);
                 }
             }
 
@@ -449,8 +485,8 @@ void BicubicSpline::d2X(const std::vector<double>& Xs, const std::vector<double>
             result2 = 0;
             for (int k=0; k<4; k++){
                 for (int l=0; l<4; l++){
-                    result1 += k*(k-1)*S[iy][ix][k + 4*l]*power(x,k-2)*power(y,l);
-                    result2 += k*S[iy][ix][k + 4*l]*power(x,k-1)*power(y,l);
+                    result1 += k*(k-1)*S[iy*(BicubicSpline::m-1)*16 + ix*16 + 4*l + k]*power(x,k-2)*power(y,l);
+                    result2 += k*S[iy*(BicubicSpline::m-1)*16 + ix*16 + 4*l + k]*power(x,k-1)*power(y,l);
                 }
             }
             
@@ -475,9 +511,9 @@ void BicubicSpline::d3X(const std::vector<double>& Xs, const std::vector<double>
             result3 = 0;
             for (int k=0; k<4; k++){
                 for (int l=0; l<4; l++){
-                    result1 += k*(k-1)*(k-2)*S[iy][ix][k + 4*l]*power(x,k-3)*power(y,l);
-                    result2 += k*(k-1)*S[iy][ix][k + 4*l]*power(x,k-2)*power(y,l);
-                    result3 += k*S[iy][ix][k + 4*l]*power(x,k-1)*power(y,l);
+                    result1 += k*(k-1)*(k-2)*S[iy*(BicubicSpline::m-1)*16 + ix*16 + 4*l + k]*power(x,k-3)*power(y,l);
+                    result2 += k*(k-1)*S[iy*(BicubicSpline::m-1)*16 + ix*16 + 4*l + k]*power(x,k-2)*power(y,l);
+                    result3 += k*S[iy*(BicubicSpline::m-1)*16 + ix*16 + 4*l + k]*power(x,k-1)*power(y,l);
                 }
             }
             
@@ -500,7 +536,7 @@ void BicubicSpline::d1Y(const std::vector<double>& Xs, const std::vector<double>
             result = 0;
             for (int k=0; k<4; k++){
                 for (int l=0; l<4; l++){
-                    result += l*S[iy][ix][l*4 + k]*power(x,k)*power(y,l-1);
+                    result += l*S[iy*(BicubicSpline::m-1)*16 + ix*16 + 4*l + k]*power(x,k)*power(y,l-1);
                 }
             }
             
@@ -524,8 +560,8 @@ void BicubicSpline::d2Y(const std::vector<double>& Xs, const std::vector<double>
             result2 = 0;
             for (int k=0; k<4; k++){
                 for (int l=0; l<4; l++){
-                    result1 += l*(l-1)*S[iy][ix][k + 4*l]*power(x,k)*power(y,l-2);
-                    result2 += l*S[iy][ix][k + 4*l]*power(x,k)*power(y,l-1);
+                    result1 += l*(l-1)*S[iy*(BicubicSpline::m-1)*16 + ix*16 + 4*l + k]*power(x,k)*power(y,l-2);
+                    result2 += l*S[iy*(BicubicSpline::m-1)*16 + ix*16 + 4*l + k]*power(x,k)*power(y,l-1);
                 }
             }
             
@@ -550,13 +586,111 @@ void BicubicSpline::d3Y(const std::vector<double>& Xs, const std::vector<double>
             result3 = 0;
             for (int k=0; k<4; k++){
                 for (int l=0; l<4; l++){
-                    result1 += l*(l-1)*(l-2)*S[iy][ix][k + 4*l]*power(x,k)*power(y,l-3);
-                    result2 += l*(l-1)*S[iy][ix][k + 4*l]*power(x,k)*power(y,l-2);
-                    result3 += l*S[iy][ix][k + 4*l]*power(x,k)*power(y,l-1);
+                    result1 += l*(l-1)*(l-2)*S[iy*(BicubicSpline::m-1)*16 + ix*16 + 4*l + k]*power(x,k)*power(y,l-3);
+                    result2 += l*(l-1)*S[iy*(BicubicSpline::m-1)*16 + ix*16 + 4*l + k]*power(x,k)*power(y,l-2);
+                    result3 += l*S[iy*(BicubicSpline::m-1)*16 + ix*16 + 4*l + k]*power(x,k)*power(y,l-1);
                 }
             }
             
             d3y[j][i] = (result1 / (std::pow(10,3*y)*power(std::log(10),3))) - (3*result2 / (std::pow(10,3*y)*power(std::log(10),2))) + (2*result3 / (std::pow(10,3*y)*std::log(10)));
         }
     }
+}
+
+double BicubicSpline::d1X(double x, double y, size_t ix, size_t iy) const{
+    double result = 0;
+    for (int k=0; k<4; k++){
+        for (int l=0; l<4; l++){
+            result += k*S[iy*(m-1)*16 + ix*16 + 4*l + k]*power(x,k-1)*power(y,l);
+        }
+    }
+
+    return(result / std::exp(x));
+}
+
+double BicubicSpline::d2X(double x, double y, size_t ix, size_t iy) const{
+    double result1 = 0;
+    double result2 = 0;
+
+    for (int k=0; k<4; k++){
+        for (int l=0; l<4; l++){
+            result1 += k*(k-1)*S[iy*(m-1)*16 + ix*16 + 4*l + k]*power(x,k-2)*power(y,l);
+            result2 += k*S[iy*(m-1)*16 + ix*16 + 4*l + k]*power(x,k-1)*power(y,l);
+        }
+    }
+    
+    return((result1 - result2) / std::exp(2*x));
+}
+
+double BicubicSpline::d1Y(double x, double y, size_t ix, size_t iy) const{
+    double result = 0;
+
+    for (int k=0; k<4; k++){
+        for (int l=0; l<4; l++){
+            result += l*S[iy*(m-1)*16 + ix*16 + 4*l + k]*power(x,k)*power(y,l-1);
+        }
+    }
+    
+    return(result / std::exp(y));
+}
+
+double BicubicSpline::d2Y(double x, double y, size_t ix, size_t iy) const{
+    double result1 = 0;
+    double result2 = 0;
+
+    for (int k=0; k<4; k++){
+        for (int l=0; l<4; l++){
+            result1 += l*(l-1)*S[iy*(m-1)*16 + ix*16 + 4*l + k]*power(x,k)*power(y,l-2);
+            result2 += l*S[iy*(m-1)*16 + ix*16 + 4*l + k]*power(x,k)*power(y,l-1);
+        }
+    }
+    
+    return((result1 - result2)/ std::exp(2*y));
+}
+
+double BicubicSpline::d1U(double x, double y, size_t ix, size_t iy) const{
+    double result = 0;
+    for (int k=0; k<4; k++){
+        for (int l=0; l<4; l++){
+            result += k*S[iy*(m-1)*16 + ix*16 + 4*l + k]*power(x,k-1)*power(y,l);
+        }
+    }
+
+    return result;
+}
+
+double BicubicSpline::d2U(double x, double y, size_t ix, size_t iy) const{
+    double result = 0;
+
+    for (int k=0; k<4; k++){
+        for (int l=0; l<4; l++){
+            result += k*(k-1)*S[iy*(m-1)*16 + ix*16 + 4*l + k]*power(x,k-2)*power(y,l);
+        }
+    }
+    
+    return result;
+}
+
+double BicubicSpline::d1V(double x, double y, size_t ix, size_t iy) const{
+    double result = 0;
+
+    for (int k=0; k<4; k++){
+        for (int l=0; l<4; l++){
+            result += l*S[iy*(m-1)*16 + ix*16 + 4*l + k]*power(x,k)*power(y,l-1);
+        }
+    }
+    
+    return result;
+}
+
+double BicubicSpline::d2V(double x, double y, size_t ix, size_t iy) const{
+    double result = 0;
+
+    for (int k=0; k<4; k++){
+        for (int l=0; l<4; l++){
+            result += l*(l-1)*S[iy*(m-1)*16 + ix*16 + 4*l + k]*power(x,k)*power(y,l-2);
+        }
+    }
+    
+    return result;
 }

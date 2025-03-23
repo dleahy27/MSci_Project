@@ -70,7 +70,7 @@ class BicubicSpline{
     std::vector<double> d4x2y2s_corners;
 
     /// Internal spline coefficients array
-    std::vector<std::vector<Vector16>> S;
+    std::vector<double> S;
 
     // functions
     /// Calculates the bicubic spline coefficients for the grid
@@ -91,6 +91,23 @@ class BicubicSpline{
 
     void d3Y(const std::vector<double>& Xs, const std::vector<double>& Ys, const std::vector<int>& iXs, const std::vector<int>& iYs);
 
+    // Derivative calculations
+    double d1X(double x, double y, size_t ix, size_t iy) const;
+
+    double d2X(double x, double y, size_t ix, size_t iy) const;
+
+    double d1Y(double x, double y, size_t ix, size_t iy) const;
+
+    double d2Y(double x, double y, size_t ix, size_t iy) const;
+
+    double d1U(double x, double y, size_t ix, size_t iy) const;
+
+    double d2U(double x, double y, size_t ix, size_t iy) const;
+
+    double d1V(double x, double y, size_t ix, size_t iy) const;
+
+    double d2V(double x, double y, size_t ix, size_t iy) const;
+
     public:
 
     /// Default constructor, for storage in STL containers
@@ -105,10 +122,17 @@ class BicubicSpline{
     /// Evaluates the bicubic spline at a singular xy point within the grid
     double evaluateSpline( double X, double Y ) const;
 
+    /// Evaluates the bicubic spline at a singular xy point within the grid when the grid indices are also known
+    double evaluateSpline( double x, double y, size_t ix, size_t iy ) const;
+    
     /// Evaluates the bicubic spline at for an array of xy point within the grid
     std::vector<std::vector<double>> evaluateSpline( const std::vector<double>& X, const std::vector<double>& Y ) const;
 
     void calculateDerivs(const std::vector<double>& X, const std::vector<double>& Y);
+
+    std::tuple<double,double,double,double> evaluateDerivs(double dx, double dy, size_t idx, size_t idy) const;
+
+    std::tuple<double,double,double,double> evaluateLogDerivs(double dx, double dy, size_t idx, size_t idy) const;
 
     void outputDerivs(const std::string& filename) const;
 

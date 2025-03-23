@@ -87,11 +87,11 @@ if __name__ == '__main__':
     ########################################################################################################
     filename = "../outputs/grid_x_test/medians.pdf"
     
-    fig = plt.figure(figsize=(12,8))
+    fig = plt.figure(figsize=(12,6))
     ax = fig.subplots(1, 2).flatten()
     
     plot = ax[0].plot(nxs, medians, marker = ".", linestyle="", label = r"Median")
-    ax[0].set_xlabel(r"(a)")
+    # ax[0].set_xlabel(r"(a)")
     # ax[0].plot(test_xs, y1, color=plot[0].get_color())
     
     plot = ax[0].plot(nxs, q16s, marker = ".", linestyle="", label = r"Median - $\sigma$")
@@ -100,6 +100,7 @@ if __name__ == '__main__':
     plot = ax[0].plot(nxs, q84s, marker = ".", linestyle="", label = r"Median + $\sigma$")
     # ax[0].plot(test_xs, y3, color=plot[0].get_color())
     
+    ax[0].set_xlabel(r"(a)", fontsize=axes_size+4)
     # ax[0].set_title(r"Median")
     ax[0].legend()
     
@@ -108,15 +109,16 @@ if __name__ == '__main__':
     
     plot = ax[1].plot(nxs[nxs>40], q16s[nxs>40], marker = ".", linestyle="", label = r"Median - $\sigma$")
     # ax[0].plot(test_xs, y2, color=plot[0].get_color())
-    
+    ax[1].set_xlabel(r"(b) $n_x \geq 40$", fontsize = axes_size+4)
     plot = ax[1].plot(nxs[nxs>40], q84s[nxs>40], marker = ".", linestyle="", label = r"Median + $\sigma$")
     # ax[0].plot(test_xs, y3, color=plot[0].get_color())
-    ax[1].set_xlabel(r"(b)")
+    #ax[1].set_xlabel(r"(b)")
     
-    fig.supxlabel(r'$n_u$', fontsize=axes_size+4)
-    fig.supylabel(r'$\Delta xf(u,v)(\%)$', fontsize=axes_size+4)
-    fig.suptitle(r'$n_v = %.2g$ ' % (ny), fontsize=title_size+4)
+    fig.supxlabel(r'$n_x$', fontsize=axes_size+6)
+    fig.supylabel(r'$\Delta xf(x,Q^2)(\%)$', fontsize=axes_size+6)
+    fig.suptitle(r'$n_{Q^2} = %.2g$ ' % (ny), fontsize=title_size+6)
     
+    fig.tight_layout()
     fig.savefig(filename,dpi=200, format="pdf")
     #######################################################################################################
     filename = "../outputs/grid_x_test/mean.pdf"

@@ -121,9 +121,9 @@ void BoundaryDerivatives::outputCornerDerivs(std::string filename){
     myfile.open("../outputs/corner_"+filename);
     myfile << "x,y,d4d2xd2y"<<std::endl;
     myfile<<x[0]<<","<<y[0]<<","<<d4y2x2[0]<<std::endl;
-    myfile<<x[m]<<","<<y[0]<<","<<d4y2x2[1]<<std::endl;
-    myfile<<x[m]<<","<<y[n]<<","<<d4y2x2[2]<<std::endl;
-    myfile<<x[0]<<","<<y[n]<<","<<d4y2x2[3]<<std::endl;
+    myfile<<x[m-1]<<","<<y[0]<<","<<d4y2x2[1]<<std::endl;
+    myfile<<x[m-1]<<","<<y[n-1]<<","<<d4y2x2[2]<<std::endl;
+    myfile<<x[0]<<","<<y[n-1]<<","<<d4y2x2[3]<<std::endl;
     myfile.close();
 }
 
