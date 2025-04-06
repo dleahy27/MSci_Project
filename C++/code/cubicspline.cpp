@@ -7,25 +7,25 @@ inline double square(double x){return x*x;}
 // fast cube function
 inline double cube(double x){return x*x*x;}
 
-CubicSpline::CubicSpline(const std::vector<double>& Ts, const std::vector<double>& Ys, double D2t2_start = 0.0, double D2t2_end = 0.0) : N(Ts.size()), _S(N - 1, std::vector<double>(4)), ts(Ts), ys(Ys), d2t2_start(D2t2_start), d2t2_end(D2t2_end)
+CubicSpline::CubicSpline(const std::vector<double>& ts, const std::vector<double>& xfs, double d2xfd2t_start = 0.0, double d2xfd2t_end = 0.0) : N(ts.size()), _S(N - 1, std::vector<double>(4)), _ts(ts), _xfs(xfs), _d2xfd2t_start(d2xfd2t_start), _d2xfd2t_end(d2xfd2t_end)
 {
     /*
     Finds cubic spline coefficients for given dataset.
     Each spline segment requires 4 coefficients.
 
     params:   ts: array of spline knots
-                ys: array of function values at spline knots
+                xfs: array of function values at spline knots
 
-    kwargs:   d2t2_start: second derivative at first knot
+    kwargs:   d2xfd2t_start: second derivative at first knot
                             (default 0)
-                d2t2_end:   second derivative at final knot
+                d2xfd2t_end:   second derivative at final knot
                             (default 0)
     */
 
     // define internal variables
 
     // check if the two lists are the same size
-    if ( ys.size() != N ){
+    if ( xfs.size() != N ){
         throw std::length_error( "Arrays must have the same length!" );
     }
 
@@ -36,7 +36,7 @@ CubicSpline::CubicSpline(const std::vector<double>& Ts, const std::vector<double
     std::vector<double> vs(N-1);
 
     // S''(ti) values
-    std::vector<double> zs(N);
+    std::vector<double> d2xfd2t(N);
 
     // coefficients of each sub-spline,
     // where sub-splines Si have the form:
@@ -47,15 +47,15 @@ CubicSpline::CubicSpline(const std::vector<double>& Ts, const std::vector<double
     // some initial array elements
     us[0] = 0;
     vs[0] = 0;
-    zs[0] = d2t2_start;
-    zs[N-1] = d2t2_end;
+    d2xfd2t[0] = _d2xfd2t_start;
+    d2xfd2t[N-1] = _d2xfd2t_end;
 
     // loop over size of arrays
     for (  int i = 0; i<N-1; i++ ){
 
         // define useful values for matrix calculation
         hs[i] = ts[i+1] - ts[i];
-        bs[i] = (ys[i+1] - ys[i]) / hs[i];
+        bs[i] = (xfs[i+1] - xfs[i]) / hs[i];
 
         // forward elimination
         if ( i == 1 ){
@@ -71,19 +71,19 @@ CubicSpline::CubicSpline(const std::vector<double>& Ts, const std::vector<double
     for (  int i = N-2; i>-1; i -= 1 ){
         // back substitution
         if ( i == 0 ){
-            S[i][0] = ys[i];
-            S[i][1] = - (hs[i]*zs[i+1])/6 - (hs[i]*zs[i])/3 + bs[i];
-            S[i][2] = zs[i]/2;
-            S[i][3] = (zs[i+1] - zs[i])/(6*hs[i]);
+            S[i][0] = xfs[i];
+            S[i][1] = - (hs[i]*d2xfd2t[i+1])/6 - (hs[i]*d2xfd2t[i])/3 + bs[i];
+            S[i][2] = d2xfd2t[i]/2;
+            S[i][3] = (d2xfd2t[i+1] - d2xfd2t[i])/(6*hs[i]);
         // find remaining coefficients
         } else{
-        // the following works because zs[N-1] has been set to a constant
-            zs[i] = ( vs[i] - (hs[i]*zs[i+1]) )/us[i];
+        // the following works because d2xfd2t[N-1] has been set to a constant
+            d2xfd2t[i] = ( vs[i] - (hs[i]*d2xfd2t[i+1]) )/us[i];
             // find coefficients for each sub-spline
-            S[i][0] = ys[i];
-            S[i][1] = - (hs[i]*zs[i+1])/6 - (hs[i]*zs[i])/3 + bs[i];
-            S[i][2] = zs[i]/2;
-            S[i][3] = (zs[i+1] - zs[i])/(6*hs[i]);
+            S[i][0] = xfs[i];
+            S[i][1] = - (hs[i]*d2xfd2t[i+1])/6 - (hs[i]*d2xfd2t[i])/3 + bs[i];
+            S[i][2] = d2xfd2t[i]/2;
+            S[i][3] = (d2xfd2t[i+1] - d2xfd2t[i])/(6*hs[i]);
         }
     }
     // define callable coefficient variable

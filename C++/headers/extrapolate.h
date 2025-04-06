@@ -7,8 +7,8 @@
 
 // struct
 struct Coeffs{
-    double x0;
-    double y0;
+    double t0;
+    double xf0;
     double a;
     double b;
 };
@@ -25,51 +25,54 @@ struct Coeffs{
 class Extrapolate{
     private:
     /// Array of grid points
-    const std::vector<double> xs;
+    const std::vector<double> ts;
     /// Array of function values at grid points
-    const std::vector<double> ys;
+    const std::vector<double> xfs;
 
     /// Evaluates the second derivative of the fitted power law at a new point
-    double secondDerivPower(double x, const Coeffs& coeffs);
+    double secondDerivPower(double t, const Coeffs& coeffs);
 
     /// Evaluates the second derivative of the fitted ten power law at a new point
-    double secondDerivTenPower(double x, const Coeffs& coeffs);
+    double secondDerivTenPower(double t, const Coeffs& coeffs);
 
     /// Evaluates the value of the power law model at a point
-    double powerLawModel(double x, const Coeffs& coeffs);
+    double powerLawModel(double t, const Coeffs& coeffs);
 
     /// Evaluates the value of the ten power law model at a point
-    double tenPowerLawModel(double x, const Coeffs& coeffs);
+    double tenPowerLawModel(double t, const Coeffs& coeffs);
 
     /// Evaluates the value of the linear model at a point
-    double linearModel(double x, const Coeffs& coeffs);
+    double linearModel(double t, const Coeffs& coeffs);
 
     /// Fits the power law model based off of grid points and function values
     Coeffs interpPowerLaw();
+
     /// Fits the 10 power law model based off of grid points and function values
     Coeffs interpTenPowerLaw();
+
     /// Fits the linear model based off of grid points and function values
     Coeffs interpLinearLaw();
-
-    
 
     public:
     /// Extrapolated value
     double solution;
 
     /// Constructor
-    Extrapolate(const std::vector<double>& X, const std::vector<double>& Y);
+    Extrapolate(const std::vector<double>& T, const std::vector<double>& XF);
 
-    /// Power law extrapolation beyond the grid for point x 
-    void extrapolatePowerLaw(double x);
-    /// 10 Power law extrapolation beyond the grid for point x 
-    void extrapolateTenPowerLaw(double x);
-    /// Linear extrapolation beyond the grid for point x 
-    void extrapolateLinearLaw(double x);
+    /// Power law extrapolation beyond the grid for point t 
+    void extrapolatePowerLaw(double t);
 
-    /// Output the extrapolated z values (before taking the second deriv)
-    double tenPowerLawZs(double x);
+    /// 10 Power law extrapolation beyond the grid for point t 
+    void extrapolateTenPowerLaw(double t);
 
-    double powerLawZs(double x);
+    /// Linear extrapolation beyond the grid for point t 
+    void extrapolateLinearLaw(double t);
+
+    /// The 10^t extrapolated xf values (before taking the second deriv)
+    double tenPowerLawxfs(double t);
+
+    /// The t^ extrapolated xf values (before taking the second deriv)
+    double powerLawxfs(double t);
 
 };

@@ -4,6 +4,8 @@
 #include <numbers>
 #define PI 3.14159265359
 
+// sampling methods used during testing
+//! NOTHING HERE IS USED WITHIN BICUBIC
 namespace sample{
     template <typename T>
     std::vector<T> linspace(T min, T max, int n){

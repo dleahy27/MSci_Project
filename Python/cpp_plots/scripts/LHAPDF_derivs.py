@@ -118,8 +118,8 @@ if __name__ == '__main__':
     
     cb1.set_label(r"$\Delta \partial_x xf(x,Q^2)$ ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
     cb2.set_label(r"$\Delta\partial_{Q^2} xf(x,Q^2)$ ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
-    cb3.set_label(r"$\Delta \partial^2_x xf(x,Q^2)$ ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
-    cb4.set_label(r"$\Delta\partial^2_{Q^2} xf(x,Q^2)$ ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
+    cb3.set_label(r"$\Delta \partial^2_{xx} xf(x,Q^2)$ ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
+    cb4.set_label(r"$\Delta\partial^2_{Q^2Q^2} xf(x,Q^2)$ ($\%$)", rotation=270, labelpad=20, fontsize=cbar_size)
     
     fig.supxlabel(r'$\log_{10}x$', fontsize=axes_size)
     fig.supylabel(r'$\log_{10}Q^2$', x=0.01, fontsize=axes_size) 

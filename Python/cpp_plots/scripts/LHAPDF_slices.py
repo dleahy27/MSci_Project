@@ -175,12 +175,12 @@ if __name__ == '__main__':
         
         mask = (y>=1) & (y<=10)
         print(grid_y.shape)
-        print(grid_xfx.T[vals_x[i]][:].shape)
-        spline = csh(grid_y,grid_xfx.T[vals_x[i]][:])
+        #print(grid_xfx.T[vals_x[i]][:].shape)
+        #spline = csh(grid_y,grid_xfx.T[vals_x[i]][:])
         
-        val = spline(pp, 2)
-        axs_cubic[i-1].plot(pp, val, marker=".",  label=r"Cubic")
-        [axs_cubic[i-1].axvline(_y, color="black", alpha=alph, zorder=-1) for _y in grid_y]
+        #val = spline(pp, 2)
+        #axs_cubic[i-1].plot(pp, val, marker=".",  label=r"Cubic")
+        #[axs_cubic[i-1].axvline(_y, color="black", alpha=alph, zorder=-1) for _y in grid_y]
         plot = axs1[i-1].plot(y[mask], an_d2x.T[vals_x[i]][mask], marker=".",  label=r"Bicubic")
         axs1[i-1].plot(y[mask], num_d2x[vals_x[i]][mask],  marker='.',  label=r"Legacy")
         axs1[i-1].set_title(r"$\log_{{10}}x={0:.2}$".format(x[vals_x[i]]),fontsize=title_size)
@@ -201,17 +201,18 @@ if __name__ == '__main__':
         if i == 1:
             axs1[i-1].legend(fontsize = title_size)
             axs2[i-1].legend(fontsize = title_size)
-        
+###############################################################################################        
         if i == 5:
-            fig = plt.figure(figsize=(6,6))
+            mask = (y>=1.5) & (y<=2)
+            fig = plt.figure(figsize=(4,4))
             ax = fig.subplots(1,1)
             ax.plot(y[mask], an_d2x.T[vals_x[i]][mask], marker=".",  label=r"Bicubic")
             ax.plot(y[mask], num_d2x[vals_x[i]][mask], marker=".",  label=r"Legacy")
-            ax.set_title(r"$\log_{{10}}x={0:.2}$".format(x[vals_x[i]]),fontsize=title_size)
+            #ax.set_title(r"$\log_{{10}}x={0:.2}$".format(x[vals_x[i]]),fontsize=18)
             [ax.axvline(_y, color="black", alpha=alph, zorder=-1) for _y in grid_y]
             ax.set_xlim(1.5,2)
-            ax.set_xlabel(r'$\log_{10}Q^2$', fontsize=title_size+4)
-            ax.set_ylabel(r'$\partial^2_x xf(Q^2;x)$', fontsize=title_size+4)
+            ax.set_xlabel(r'$\log_{10}Q^2$', fontsize=14)
+            ax.set_ylabel(r'$\partial^2_{xx} xf(Q^2;x)$', fontsize=16)
             fig.tight_layout()
             fig.savefig("../outputs/LHAPDF/up/deriv_slice_vert.pdf", format="pdf")
         

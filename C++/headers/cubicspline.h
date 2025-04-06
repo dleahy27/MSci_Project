@@ -18,17 +18,17 @@
 class CubicSpline{
     private:
     /// Array of grid points
-    std::vector<double> ts;
+    std::vector<double> _ts;
     /// Array of function values at grid points
-    std::vector<double> ys;
+    std::vector<double> _xfs;
 
     /// Number of grid points
     int N;
 
     /// Second derivative of the first/start grid point
-    double d2t2_start;
+    double _d2xfd2t_start;
     /// Second derivative of the last/end grid point 
-    double d2t2_end;
+    double _d2xfd2t_end;
 
     /// Internal 2D array containing spline coefficients at each interval
     std::vector<std::vector<double>> _S;
@@ -41,7 +41,7 @@ class CubicSpline{
 
     public:
     /// Constructor
-    CubicSpline(const std::vector<double>& Ts, const std::vector<double>& Ys, double D2t2_start, double D2t2_end);
+    CubicSpline(const std::vector<double>& ts, const std::vector<double>& xfs, double d2xfd2t_start, double d2xfd2t_end);
 
     /// Evaluates a functional value at a specific point within the grid
     double evaluateSpline(double t, const std::vector<std::vector<double>>& S, const std::vector<double>& ts);

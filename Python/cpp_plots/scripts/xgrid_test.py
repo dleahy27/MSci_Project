@@ -11,9 +11,9 @@ plt.rcParams["text.usetex"] = True
 plt.rcParams['text.latex.preamble'] = r'\usepackage{{amsmath}}'
 
 # Plot data
-title_size = 14
-cbar_size = 14
-axes_size = 14
+title_size = 10
+cbar_size = 10
+axes_size = 10
 
 def error_func_log(m,c,x):
     # straight line as it does not handle powers well
@@ -87,7 +87,7 @@ if __name__ == '__main__':
     ########################################################################################################
     filename = "../outputs/grid_x_test/medians.pdf"
     
-    fig = plt.figure(figsize=(12,6))
+    fig = plt.figure(figsize=(8,4))
     ax = fig.subplots(1, 2).flatten()
     
     plot = ax[0].plot(nxs, medians, marker = ".", linestyle="", label = r"Median")
@@ -100,7 +100,7 @@ if __name__ == '__main__':
     plot = ax[0].plot(nxs, q84s, marker = ".", linestyle="", label = r"Median + $\sigma$")
     # ax[0].plot(test_xs, y3, color=plot[0].get_color())
     
-    ax[0].set_xlabel(r"(a)", fontsize=axes_size+4)
+    ax[0].set_xlabel(r"(a)", fontsize=axes_size+6)
     # ax[0].set_title(r"Median")
     ax[0].legend()
     
@@ -109,18 +109,18 @@ if __name__ == '__main__':
     
     plot = ax[1].plot(nxs[nxs>40], q16s[nxs>40], marker = ".", linestyle="", label = r"Median - $\sigma$")
     # ax[0].plot(test_xs, y2, color=plot[0].get_color())
-    ax[1].set_xlabel(r"(b) $n_x \geq 40$", fontsize = axes_size+4)
+    ax[1].set_xlabel(r"(b) $n_u \geq 40$", fontsize = axes_size+6)
     plot = ax[1].plot(nxs[nxs>40], q84s[nxs>40], marker = ".", linestyle="", label = r"Median + $\sigma$")
     # ax[0].plot(test_xs, y3, color=plot[0].get_color())
     #ax[1].set_xlabel(r"(b)")
     
-    fig.supxlabel(r'$n_x$', fontsize=axes_size+6)
-    fig.supylabel(r'$\Delta xf(x,Q^2)(\%)$', fontsize=axes_size+6)
-    fig.suptitle(r'$n_{Q^2} = %.2g$ ' % (ny), fontsize=title_size+6)
+    fig.supxlabel(r'$n_u$', fontsize=axes_size+6)
+    fig.supylabel(r'$\Delta xf(u,v)(\%)$', fontsize=axes_size+6)
+    fig.suptitle(r'$n_{v} = %.2g$ ' % (ny), fontsize=title_size+6)
     
     fig.tight_layout()
     fig.savefig(filename,dpi=200, format="pdf")
-    #######################################################################################################
+    ######################################################################################################
     filename = "../outputs/grid_x_test/mean.pdf"
     
     fig = plt.figure(figsize=(12,8))

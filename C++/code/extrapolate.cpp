@@ -1,87 +1,87 @@
 #include "../headers/extrapolate.h"
 
 // fast square function
-inline double square(double x){return x*x;}
+inline double square(double t){return t*t;}
 inline const double epsilon = std::numeric_limits<double>::epsilon();
 
-// Model function y = a(x - x0)^b + y0
-double Extrapolate::powerLawModel(double x, const Coeffs& coeffs) {
-    // Covers some backwards cases by reflecting around x-x0
-    if ( (x - coeffs.x0)<0 ){
-        return (coeffs.y0 + coeffs.a*std::pow((-x + coeffs.x0),coeffs.b));
+// Model function y = a(t - t0)^b + xf0
+double Extrapolate::powerLawModel(double t, const Coeffs& coeffs) {
+    // Covers some backwards cases by reflecting around t-t0
+    if ( (t - coeffs.t0)<0 ){
+        return (coeffs.xf0 + coeffs.a*std::pow((-t + coeffs.t0),coeffs.b));
     }else{
-        return (coeffs.y0 + coeffs.a*std::pow(((x - coeffs.x0)),coeffs.b));
+        return (coeffs.xf0 + coeffs.a*std::pow(((t - coeffs.t0)),coeffs.b));
     }
 }
 
 // Analytical second derivative of power function
-double Extrapolate::secondDerivPower(double x, const Coeffs& coeffs) {
-    // Covers some backwards cases by reflecting around x-x0
+double Extrapolate::secondDerivPower(double t, const Coeffs& coeffs) {
+    // Covers some backwards cases by reflecting around t-t0
     if (std::abs(coeffs.b-1)<=100*epsilon){
         return 0;
-    }else if ( x - coeffs.x0<0 ){
-        return coeffs.a*coeffs.b *(coeffs.b - 1)*std::pow(-x + coeffs.x0, coeffs.b - 2);
-    }else if ( x - coeffs.x0>0 ){
-        return  coeffs.a*coeffs.b *(coeffs.b - 1)*std::pow(x - coeffs.x0, coeffs.b - 2);
+    }else if ( t - coeffs.t0<0 ){
+        return coeffs.a*coeffs.b *(coeffs.b - 1)*std::pow(-t + coeffs.t0, coeffs.b - 2);
+    }else if ( t - coeffs.t0>0 ){
+        return  coeffs.a*coeffs.b *(coeffs.b - 1)*std::pow(t - coeffs.t0, coeffs.b - 2);
     }else {
         return 0;
     }
 }
 
-// Model function y = a (10^(x - x0)^b) + y0
-double Extrapolate::tenPowerLawModel(double x, const Coeffs& coeffs) {
-    return coeffs.a*std::pow(10,x*coeffs.b) - coeffs.y0;
+// Model function y = a (10^(t - t0)^b) + xf0
+double Extrapolate::tenPowerLawModel(double t, const Coeffs& coeffs) {
+    return coeffs.a*std::pow(10,t*coeffs.b) - coeffs.xf0;
 }
 
 // Analytical second derivative of power function
-double Extrapolate::secondDerivTenPower(double x, const Coeffs& coeffs) {
+double Extrapolate::secondDerivTenPower(double t, const Coeffs& coeffs) {
     if (std::abs(coeffs.b)<=100*epsilon){
         return 0;
-    }else{return square(std::log(10)*coeffs.b)*coeffs.a*std::pow(10, x*coeffs.b);}
+    }else{return square(std::log(10)*coeffs.b)*coeffs.a*std::pow(10, t*coeffs.b);}
 }
 
-// Linear model: y = a(x-x0) + y0
-double Extrapolate::linearModel(double x, const Coeffs& coeffs) {
-    return(coeffs.a*x + coeffs.y0);
+// Linear model: y = a(t-t0) + xf0
+double Extrapolate::linearModel(double t, const Coeffs& coeffs) {
+    return(coeffs.a*t + coeffs.xf0);
 }
 
-// Fit y = a*(x - x0)^b + y0
+// Fit y = a*(t - t0)^b + xf0
 Coeffs Extrapolate::interpPowerLaw() {
-    // Initialize parameters a, b, and y0
+    // Initialize parameters a, b, and xf0
     Coeffs sol;
-    double y0,y1,y2;
-    double x0,x1,x2;
+    double xf0,xf1,xf2;
+    double t0,t1,t2;
 
-    sol.y0 = y0 = ys[0];
-    y1 = ys[1];
-    y2 = ys[2];
-    sol.x0 = x0 = xs[0];
-    x1 = xs[1];
-    x2 = xs[2];
+    sol.xf0 = xf0 = xfs[0];
+    xf1 = xfs[1];
+    xf2 = xfs[2];
+    sol.t0 = t0 = ts[0];
+    t1 = ts[1];
+    t2 = ts[2];
 
     // Calculate a and b coefficients, different cases to handle differing directions on the curve
     // Needs symmetry transformations to handle specific cases
-    // Standard increasing x and y case (positive power)
-    if ( (x2 - x0) > 0 && (x1 - x0) > 0 && (y2 - y0) > 0 && (y1 - y0) > 0 ){
-        sol.b = (std::log(y2 - y0) - std::log(y1 - y0)) / (std::log(x2 - x0) - std::log(x1 - x0));
-        sol.a = std::exp( std::log(y2 - y0) - sol.b*std::log(x2 - x0) );
+    // Standard increasing t and y case (positive power)
+    if ( (t2 - t0) > 0 && (t1 - t0) > 0 && (xf2 - xf0) > 0 && (xf1 - xf0) > 0 ){
+        sol.b = (std::log(xf2 - xf0) - std::log(xf1 - xf0)) / (std::log(t2 - t0) - std::log(t1 - t0));
+        sol.a = std::exp( std::log(xf2 - xf0) - sol.b*std::log(t2 - t0) );
         return sol;
-        // Decreasing x but increasing y (negative power but backtracking)
-    } else if ( (x2 - x0) < 0 && (x1 - x0) < 0 && (y2 - y0) > 0 && (y1 - y0) > 0){
-        sol.b = (std::log(y2 - y0) - std::log(y1 - y0)) / (std::log(-(x2 - x0)) - std::log(-(x1 - x0)));
-        sol.a = std::exp( std::log(y2 - y0) - sol.b*std::log(-(x2 - x0)) );
+        // Decreasing t but increasing y (negative power but backtracking)
+    } else if ( (t2 - t0) < 0 && (t1 - t0) < 0 && (xf2 - xf0) > 0 && (xf1 - xf0) > 0){
+        sol.b = (std::log(xf2 - xf0) - std::log(xf1 - xf0)) / (std::log(-(t2 - t0)) - std::log(-(t1 - t0)));
+        sol.a = std::exp( std::log(xf2 - xf0) - sol.b*std::log(-(t2 - t0)) );
         return sol;
-        // Decreasing x and decreasing y (positive power but backtrackinig)
-    } else if ( (x2 - x0) < 0 && (x1 - x0) < 0 && (y2 - y0) < 0 && (y1 - y0) < 0 ){
-        sol.b = (std::log( -(y2 - y0) ) - std::log( -(y1 - y0) )) / (std::log(-(x2 - x0)) - std::log(-(x1 - x0)));
-        sol.a = -std::exp( std::log( -(y2 - y0) ) - sol.b*std::log(-(x2 - x0)) );
+        // Decreasing t and decreasing y (positive power but backtrackinig)
+    } else if ( (t2 - t0) < 0 && (t1 - t0) < 0 && (xf2 - xf0) < 0 && (xf1 - xf0) < 0 ){
+        sol.b = (std::log( -(xf2 - xf0) ) - std::log( -(xf1 - xf0) )) / (std::log(-(t2 - t0)) - std::log(-(t1 - t0)));
+        sol.a = -std::exp( std::log( -(xf2 - xf0) ) - sol.b*std::log(-(t2 - t0)) );
         return sol;
-        // Increasing x but decreasing y (negative power)
-    } else if ( (x2 - x0) > 0 && (x1 - x0) > 0 && (y2 - y0) < 0 && (y1 - y0) < 0 ){
-        sol.b = (std::log( -(y2 - y0) ) - std::log( -(y1 - y0) )) / (std::log(x2 - x0) - std::log(x1 - x0));
-        sol.a = -std::exp( std::log( -(y2 - y0) ) - sol.b*std::log(x2 - x0) );
+        // Increasing t but decreasing y (negative power)
+    } else if ( (t2 - t0) > 0 && (t1 - t0) > 0 && (xf2 - xf0) < 0 && (xf1 - xf0) < 0 ){
+        sol.b = (std::log( -(xf2 - xf0) ) - std::log( -(xf1 - xf0) )) / (std::log(t2 - t0) - std::log(t1 - t0));
+        sol.a = -std::exp( std::log( -(xf2 - xf0) ) - sol.b*std::log(t2 - t0) );
         return sol;
-        // Constant curve y = y0
+        // Constant curve y = xf0
     } else{
         sol.b = 0;
         sol.a = 0;
@@ -89,51 +89,51 @@ Coeffs Extrapolate::interpPowerLaw() {
     }
 }
 
-// Fit y = a(x - x0) + y0
+// Fit y = a(t - t0) + xf0
 Coeffs Extrapolate::interpLinearLaw() {
     // Initialize parameters a, b, and c
     Coeffs sol;
-    double y0,y1,y2;
-    double x0,x1,x2;
-    y1 = ys[1];
-    y2 = ys[2];
+    double xf0,xf1,xf2;
+    double t0,t1,t2;
+    xf1 = xfs[1];
+    xf2 = xfs[2];
 
-    x1 = xs[1];
-    x2 = xs[2];
+    t1 = ts[1];
+    t2 = ts[2];
 
-    double ydiff = y2 - y1;
-    double xdiff = x2 - x1;
+    double ydiff = xf2 - xf1;
+    double xdiff = t2 - t1;
     sol.a = ydiff / xdiff;
-    sol.y0 = y2 - sol.a*(x2);
+    sol.xf0 = xf2 - sol.a*(t2);
 
     return sol;
 }
 
-// Fit y = a* (10^(x - x0))^b + y0
+// Fit y = a* (10^(t - t0))^b + xf0
 Coeffs Extrapolate::interpTenPowerLaw() {
-    // Initialize parameters a, b, and y0
+    // Initialize parameters a, b, and xf0
     Coeffs sol;
-    double y1,y2;
-    double x1,x2;
+    double xf1,xf2;
+    double t1,t2;
 
-    x1 = xs[0];
-    x2 = xs[1];
+    t1 = ts[0];
+    t2 = ts[1];
 
-    if (ys.size() == 3){
-        sol.y0 = ys[0];
+    if (xfs.size() == 3){
+        sol.xf0 = xfs[0];
 
-        if (ys[2] - ys[0] > 0 && ys[1] - ys[0] > 0){
-            y1 = std::log10(ys[1] - ys[0]);
-            y2 = std::log10(ys[2] - ys[0]);
-            sol.b = (y2 - y1) / (x2 - x1);
-            sol.a = std::pow(10,(y2 - sol.b*x2));
+        if (xfs[2] - xfs[0] > 0 && xfs[1] - xfs[0] > 0){
+            xf1 = std::log10(xfs[1] - xfs[0]);
+            xf2 = std::log10(xfs[2] - xfs[0]);
+            sol.b = (xf2 - xf1) / (t2 - t1);
+            sol.a = std::pow(10,(xf2 - sol.b*t2));
 
             return sol; 
-        } else if (ys[2] - ys[0] < 0 && ys[1] - ys[0] < 0){
-            y1 = std::log10(ys[0] - ys[1]);
-            y2 = std::log10(ys[0] - ys[2]);
-            sol.b = (y2 - y1) / (x2 - x1);
-            sol.a = std::pow(10,(y2 - sol.b*x2));
+        } else if (xfs[2] - xfs[0] < 0 && xfs[1] - xfs[0] < 0){
+            xf1 = std::log10(xfs[0] - xfs[1]);
+            xf2 = std::log10(xfs[0] - xfs[2]);
+            sol.b = (xf2 - xf1) / (t2 - t1);
+            sol.a = std::pow(10,(xf2 - sol.b*t2));
 
             return sol;
         } else{
@@ -142,20 +142,20 @@ Coeffs Extrapolate::interpTenPowerLaw() {
 
             return sol;
         }
-    } else if (ys.size() == 2){
-        sol.y0 = 0;
+    } else if (xfs.size() == 2){
+        sol.xf0 = 0;
 
-        if (ys[1]> 0 && ys[0]> 0){
-            y1 = std::log10(ys[0]);
-            y2 = std::log10(ys[1]);
-            sol.b = (y2 - y1) / (x2 - x1);
-            sol.a = std::pow(10,(y2 - sol.b*x2));
+        if (xfs[1]> 0 && xfs[0]> 0){
+            xf1 = std::log10(xfs[0]);
+            xf2 = std::log10(xfs[1]);
+            sol.b = (xf2 - xf1) / (t2 - t1);
+            sol.a = std::pow(10,(xf2 - sol.b*t2));
             return sol; 
-        } else if (ys[2] - ys[0] < 0 && ys[1] - ys[0] < 0){
-            y1 = std::log10(-ys[0]);
-            y2 = std::log10(-ys[1]);
-            sol.b = (y2 - y1) / (x2 - x1);
-            sol.a = std::pow(10,(y2 - sol.b*x2));
+        } else if (xfs[2] - xfs[0] < 0 && xfs[1] - xfs[0] < 0){
+            xf1 = std::log10(-xfs[0]);
+            xf2 = std::log10(-xfs[1]);
+            sol.b = (xf2 - xf1) / (t2 - t1);
+            sol.a = std::pow(10,(xf2 - sol.b*t2));
             return sol;
         } else{
             sol.a = 0;
@@ -170,48 +170,48 @@ Coeffs Extrapolate::interpTenPowerLaw() {
 }
 
 // Function to extrapolate based on the power-law fit
-void Extrapolate::extrapolatePowerLaw(double x) {
+void Extrapolate::extrapolatePowerLaw(double t) {
     // Fit the model
     Coeffs coeffs = interpPowerLaw();
 
-    // Predict/extrapolate the value at x
-    solution = secondDerivPower(x,coeffs);
+    // Predict/extrapolate the value at t
+    solution = secondDerivPower(t,coeffs);
 }
 
 // Function to extrapolate based on the 10^power-law fit
-void Extrapolate::extrapolateTenPowerLaw(double x) {
+void Extrapolate::extrapolateTenPowerLaw(double t) {
     // Fit the model
     Coeffs coeffs = interpTenPowerLaw();
 
-    // Predict/extrapolate the value at x
-    solution = secondDerivTenPower(x,coeffs);
+    // Predict/extrapolate the value at t
+    solution = secondDerivTenPower(t,coeffs);
 }
 
 // Function to extrapolate based on the linear fit
-void Extrapolate::extrapolateLinearLaw(double x) {
+void Extrapolate::extrapolateLinearLaw(double t) {
     // Fit the model
     Coeffs coeffs = interpLinearLaw();
 
-    // Predict/extrapolate the value at x
-    solution = linearModel(x,coeffs);
+    // Predict/extrapolate the value at t
+    solution = linearModel(t,coeffs);
 }
 
 // constructor
-Extrapolate::Extrapolate(const std::vector<double>& X, const std::vector<double>& Y) : xs(X), ys(Y) {}
+Extrapolate::Extrapolate(const std::vector<double>& X, const std::vector<double>& Y) : ts(X), xfs(Y) {}
 
-double Extrapolate::powerLawZs(double x){
+double Extrapolate::powerLawxfs(double t){
     // Fit the model
     Coeffs coeffs = interpPowerLaw();
 
-    // Predict/extrapolate the value at x
-    return(powerLawModel(x,coeffs));
+    // Predict/extrapolate the value at t
+    return(powerLawModel(t,coeffs));
 }
 
-double Extrapolate::tenPowerLawZs(double x){
+double Extrapolate::tenPowerLawxfs(double t){
     // Fit the model
     Coeffs coeffs = interpTenPowerLaw();
 
-    // Predict/extrapolate the value at x
-    return(tenPowerLawModel(x,coeffs));
+    // Predict/extrapolate the value at t
+    return(tenPowerLawModel(t,coeffs));
 
 }
