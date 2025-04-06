@@ -157,11 +157,11 @@ Derivatives funcs::deriv_gauss(const std::vector<double>& x, const std::vector<d
     int m = x.size()-1;
     int n = y.size()-1;
 
-    ds.d2x2s_left = d2dx2_gauss(x[0], y);
-    ds.d2x2s_right = d2dx2_gauss(x[m], y);
-    ds.d2y2s_bottom = d2dy2_gauss(x, y[0]);
-    ds.d2y2s_top = d2dy2_gauss(x, y[n]);
-    ds.d4x2y2s_corners = d4dx2dy2_gauss(std::vector<double> {x[0],x[m]},std::vector<double> {y[0],y[n]});
+    ds.d2xfd2xs_left = d2dx2_gauss(x[0], y);
+    ds.d2xfd2xs_right = d2dx2_gauss(x[m], y);
+    ds.d2xfd2Q2s_bottom = d2dy2_gauss(x, y[0]);
+    ds.d2xfd2Q2s_top = d2dy2_gauss(x, y[n]);
+    ds.d4xfd2xd2Q2s_corners = d4dx2dy2_gauss(std::vector<double> {x[0],x[m]},std::vector<double> {y[0],y[n]});
 
     return ds;
 }
@@ -232,11 +232,11 @@ Derivatives funcs::deriv_trig(const std::vector<double>& x, const std::vector<do
     int m = x.size()-1;
     int n = y.size()-1;
 
-    ds.d2x2s_left = d2dx2_trig(x[0], y);
-    ds.d2x2s_right = d2dx2_trig(x[m], y);
-    ds.d2y2s_bottom = d2dy2_trig(x, y[0]);
-    ds.d2y2s_top = d2dy2_trig(x, y[n]);
-    ds.d4x2y2s_corners = d4dx2dy2_trig(std::vector<double> {x[0],x[m]},std::vector<double> {y[0],y[n]});
+    ds.d2xfd2xs_left = d2dx2_trig(x[0], y);
+    ds.d2xfd2xs_right = d2dx2_trig(x[m], y);
+    ds.d2xfd2Q2s_bottom = d2dy2_trig(x, y[0]);
+    ds.d2xfd2Q2s_top = d2dy2_trig(x, y[n]);
+    ds.d4xfd2xd2Q2s_corners = d4dx2dy2_trig(std::vector<double> {x[0],x[m]},std::vector<double> {y[0],y[n]});
 
     return ds;
 }
@@ -321,25 +321,25 @@ Derivatives funcs::deriv_pdfLike(const std::vector<double>& x, const std::vector
     m = x.size();
     n = y.size();
     temp = d2dx2_pdfLike(x,y);
-    ds.d2x2s_left.reserve(n);
-    ds.d2x2s_right.reserve(n);
-    ds.d2y2s_bottom.reserve(m);
-    ds.d2y2s_top.reserve(m);
-    ds.d4x2y2s_corners.reserve(4);
+    ds.d2xfd2xs_left.reserve(n);
+    ds.d2xfd2xs_right.reserve(n);
+    ds.d2xfd2Q2s_bottom.reserve(m);
+    ds.d2xfd2Q2s_top.reserve(m);
+    ds.d4xfd2xd2Q2s_corners.reserve(4);
 
     for (int i = 0; i<n; i++){
-        ds.d2x2s_left.push_back(temp[i][0]);
-        ds.d2x2s_right.push_back(temp[i][m-1]);
+        ds.d2xfd2xs_left.push_back(temp[i][0]);
+        ds.d2xfd2xs_right.push_back(temp[i][m-1]);
     }
 
     temp = d2dy2_pdfLike(x,y);
 
     for (int i = 0; i<m; i++){
-        ds.d2y2s_bottom.push_back(temp[0][i]);
-        ds.d2y2s_top.push_back(temp[n-1][i]);
+        ds.d2xfd2Q2s_bottom.push_back(temp[0][i]);
+        ds.d2xfd2Q2s_top.push_back(temp[n-1][i]);
     }
 
-    ds.d4x2y2s_corners = d4dx2dy2_pdfLike(std::vector<double> {x[0],x[m-1]},std::vector<double> {y[0],y[n-1]});
+    ds.d4xfd2xd2Q2s_corners = d4dx2dy2_pdfLike(std::vector<double> {x[0],x[m-1]},std::vector<double> {y[0],y[n-1]});
 
     return ds;
 }
@@ -408,11 +408,11 @@ Derivatives funcs::pdfBoundaryDerivatives( const std::vector<double>& xs, const 
     int m = xs.size();
 
     Derivatives ds;
-    ds.d2x2s_left.reserve(n);
-    ds.d2x2s_right.reserve(n);
-    ds.d2y2s_bottom.reserve(m);
-    ds.d2y2s_top.reserve(m);
-    ds.d4x2y2s_corners.reserve(4);
+    ds.d2xfd2xs_left.reserve(n);
+    ds.d2xfd2xs_right.reserve(n);
+    ds.d2xfd2Q2s_bottom.reserve(m);
+    ds.d2xfd2Q2s_top.reserve(m);
+    ds.d4xfd2xd2Q2s_corners.reserve(4);
 
     double x, y;
     
@@ -420,18 +420,18 @@ Derivatives funcs::pdfBoundaryDerivatives( const std::vector<double>& xs, const 
         y = ys[i];
 
         x = xs[0];
-        ds.d2x2s_left.push_back(logx_deriv(x,y));
+        ds.d2xfd2xs_left.push_back(logx_deriv(x,y));
         x = xs[m-1];
-        ds.d2x2s_right.push_back(logx_deriv(x,y));
+        ds.d2xfd2xs_right.push_back(logx_deriv(x,y));
     }
 
     for ( int i = 0; i<m; i++){       
-        ds.d2y2s_bottom.push_back(0);
-        ds.d2y2s_top.push_back(0);
+        ds.d2xfd2Q2s_bottom.push_back(0);
+        ds.d2xfd2Q2s_top.push_back(0);
     }
 
     for (int i = 0; i <4; i++){
-        ds.d4x2y2s_corners.push_back(0);
+        ds.d4xfd2xd2Q2s_corners.push_back(0);
     }
 
     return ds;
@@ -447,7 +447,7 @@ void funcs::outputPdfBoundaryDerivatives( const std::vector<double>& x, const st
     myfile.open("../outputs/an_bound_d2y.csv");
     myfile << "x,d2y_top,d2y_bottom"<<std::endl;
     for(int i = 0; i<m; i++){
-        myfile<<x[i]<<","<<derivs.d2y2s_top[i]<<","<<derivs.d2y2s_bottom[i]<<std::endl;
+        myfile<<x[i]<<","<<derivs.d2xfd2Q2s_top[i]<<","<<derivs.d2xfd2Q2s_bottom[i]<<std::endl;
     }
     myfile.close();
 
@@ -455,17 +455,17 @@ void funcs::outputPdfBoundaryDerivatives( const std::vector<double>& x, const st
     myfile2.open("../outputs/an_bound_d2x.csv");
     myfile2 << "y,d2x_left,d2x_right"<<std::endl;
     for(int i = 0; i<n; i++){
-        myfile2<<y[i]<<","<<derivs.d2x2s_left[i]<<","<<derivs.d2x2s_right[i]<<std::endl;
+        myfile2<<y[i]<<","<<derivs.d2xfd2xs_left[i]<<","<<derivs.d2xfd2xs_right[i]<<std::endl;
     }
     myfile2.close();
 
     std::ofstream myfile3;
     myfile3.open("../outputs/an_bound_corners.csv");
     myfile3 << "x,y,d4d2xd2y"<<std::endl;
-    myfile3<<x[0]<<","<<y[0]<<","<<derivs.d4x2y2s_corners[0]<<std::endl;
-    myfile3<<x[m-1]<<","<<y[0]<<","<<derivs.d4x2y2s_corners[1]<<std::endl;
-    myfile3<<x[m-1]<<","<<y[n-1]<<","<<derivs.d4x2y2s_corners[2]<<std::endl;
-    myfile3<<x[0]<<","<<y[n-1]<<","<<derivs.d4x2y2s_corners[3]<<std::endl;
+    myfile3<<x[0]<<","<<y[0]<<","<<derivs.d4xfd2xd2Q2s_corners[0]<<std::endl;
+    myfile3<<x[m-1]<<","<<y[0]<<","<<derivs.d4xfd2xd2Q2s_corners[1]<<std::endl;
+    myfile3<<x[m-1]<<","<<y[n-1]<<","<<derivs.d4xfd2xd2Q2s_corners[2]<<std::endl;
+    myfile3<<x[0]<<","<<y[n-1]<<","<<derivs.d4xfd2xd2Q2s_corners[3]<<std::endl;
     myfile3.close();
 }
 
