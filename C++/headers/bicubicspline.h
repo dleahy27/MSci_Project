@@ -129,7 +129,7 @@ class BicubicSpline{
     double evaluateSpline( double u, double v ) const;
 
     /// Evaluates the bicubic spline at a singular xy point within the grid when the grid indices are also known
-    double evaluateSpline( double u, double v, size_t ix, size_t iy ) const;
+    double evaluateSpline( double u, double v, size_t iu, size_t iv ) const;
     
     /// Evaluates the bicubic spline at for an array of xy point within the grid
     std::vector<std::vector<double>> evaluateSpline( const std::vector<double>& u, const std::vector<double>& v ) const;
@@ -138,10 +138,10 @@ class BicubicSpline{
     void calculateDerivs(const std::vector<double>& u, const std::vector<double>& v);
 
     /// LHAPDF method to evaluate the x-Q2 derivatives at a log grid point 
-    std::tuple<double,double,double,double> evaluateDerivs(double du, double dy, size_t idu, size_t idy) const;
+    std::tuple<double,double,double,double> evaluateDerivs(double du, double dy, size_t idu, size_t idv) const;
     
     /// LHAPDF method to evaluate the u-v derivatives at a log grid point 
-    std::tuple<double,double,double,double> evaluateLogDerivs(double du, double dy, size_t idu, size_t idy) const;
+    std::tuple<double,double,double,double> evaluateLogDerivs(double du, double dy, size_t idu, size_t idv) const;
 
     /// Depreciated method to write the derivative vectors out to file -- used in project
     void outputDerivs(const std::string& filename) const;

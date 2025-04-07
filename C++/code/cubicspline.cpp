@@ -94,7 +94,7 @@ double CubicSpline::evaluateSpline(double t, const std::vector<std::vector<doubl
     /*
     Returns the value(s) of the interpolated function at x.
 
-    params:  x:  value(s) at which to evaluate function.
+    params:  t:  value(s) at which to evaluate function.
                     User can provide either a single input 
                     value or an array of inputs.
     */
